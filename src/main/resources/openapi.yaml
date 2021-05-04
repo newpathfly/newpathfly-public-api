@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: Flight Search API
+  version: 2.1.0
+  description: API for flight search
+  contact:
+    name: newpathfly
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: requests
+  - name: results
+paths:
+  /requests:
+    post:
+      operationId: sendRequest
+      tags:
+        - requests
+      description: send search request for flights
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResult"
+  /results:
+    post:
+      operationId: pollResult
+      tags:
+        - results
+      description: poll search results for flights
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PollRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PollResult"
+components:
+  schemas:
+    SearchRequest:
+      properties:
+        whatever:
+          type: string
+    SearchResult:
+      properties:
+        whatever:
+          type: string
+    PollRequest:
+      properties:
+        whatever:
+          type: string
+    PollResult:
+      properties:
+        whatever:
+          type: string
