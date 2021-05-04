@@ -1,3 +1,3 @@
-# Public APIs
+# Public API
 
-[API Documentation](/markdown/README.md)
+[Search API](/doc/markdown/search/README.md)

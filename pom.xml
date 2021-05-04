@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.newpathfly</groupId>
-    <artifactId>flight-search-api</artifactId>
+    <artifactId>public-api</artifactId>
     <version>0.1.0</version>
 
-    <name>flight-search-api</name>
-    <description>A simple flight-search-api.</description>
+    <name>public-api</name>
+    <description>newpathfly public API</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -87,7 +87,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/search.api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.newpathfly.search.api</apiPackage>
                             <modelPackage>com.newpathfly.search.model</modelPackage>
@@ -102,11 +102,9 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
-                            <generatorName>html</generatorName>
-                            <output>${project.basedir}/html</output>
-                            <apiPackage>com.newpathfly.search.api</apiPackage>
-                            <modelPackage>com.newpathfly.search.model</modelPackage>
+                            <inputSpec>${project.basedir}/src/main/resources/search.api.yaml</inputSpec>
+                            <generatorName>html2</generatorName>
+                            <output>${project.basedir}/doc/html/search</output>
                         </configuration>
                     </execution>
                     <execution>
@@ -115,9 +113,9 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/search.api.yaml</inputSpec>
                             <generatorName>markdown</generatorName>
-                            <output>${project.basedir}/markdown</output>
+                            <output>${project.basedir}/doc/markdown/search</output>
                         </configuration>
                     </execution>
                 </executions>
