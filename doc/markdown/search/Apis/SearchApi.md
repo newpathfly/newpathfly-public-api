@@ -1,17 +1,17 @@
-# RequestsApi
+# SearchApi
 
 All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**createRequest**](RequestsApi.md#createRequest) | **POST** /requests | 
+[**createSearch**](SearchApi.md#createSearch) | **POST** /searches | Call this endpoint to create a search request.
 
 
-<a name="createRequest"></a>
-# **createRequest**
-> SuccessOutput createRequest(SearchRequest)
+<a name="createSearch"></a>
+# **createSearch**
+> SearchRequestSuccessful createSearch(SearchRequest)
 
-
+Call this endpoint to create a search request.
 
     TODO
 
@@ -23,7 +23,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**SuccessOutput**](../Models/SuccessOutput.md)
+[**SearchRequestSuccessful**](../Models/SearchRequestSuccessful.md)
 
 ### Authorization
 

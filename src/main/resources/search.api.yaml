@@ -2,21 +2,22 @@ openapi: 3.0.3
 info:
   title: Flight Search API
   version: 2.1.0
-  description: API for flight search
+  description: This API is intended for backend integration only. It is not designed for calling from a frontend directly.
   contact:
     name: newpathfly
 servers:
   - url: http://localhost:8080
 tags:
-  - name: requests
-  - name: results
+  - name: Search
+  - name: Poll
 paths:
-  /requests:
+  /searches:
     post:
-      operationId: createRequest
-      tags:
-        - requests
+      summary: Call this endpoint to create a search request.
       description: TODO
+      operationId: createSearch
+      tags:
+        - Search
       requestBody:
         content:
           application/json:
@@ -28,36 +29,36 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SuccessOutput"
+                $ref: "#/components/schemas/SearchRequestSuccessful"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/FailedOutput"
+                $ref: "#/components/schemas/SearchRequestFailed"
 
-  /results:
+  /polls:
     post:
-      operationId: pollResult
+      operationId: createPoll
       tags:
-        - results
-      description: poll search results for flights
+        - Poll
+      description: Call this endpoint to poll for search results.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PollRequest"
+              $ref: "#/components/schemas/SearchResultPoll"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PollResult"
+                $ref: "#/components/schemas/SearchResult"
 
 components:
   schemas:
-    # main schemas
+    # Search Request
     SearchRequest:
       description: TODO
       required:
@@ -71,7 +72,7 @@ components:
           items:
             $ref: "#/components/schemas/Query"
         type:
-            $ref: "#/components/schemas/TripType"
+          $ref: "#/components/schemas/TripType"
         adultAmount:
           description: This is the number of adult passengers
           type: integer
@@ -87,39 +88,57 @@ components:
         fareClass:
           $ref: "#/components/schemas/FareClass"
 
-    PollRequest:
-      description: TODO
-      properties:
-        whatever:
-          type: string
-
-    PollResult:
-      description: TODO
-      properties:
-        whatever:
-          type: string
-
-    SuccessOutput:
+    SearchRequestSuccessful:
       description: TODO
       properties:
         resultCode:
           type: integer
           default: 200
         requestId:
+          description: This is the request ID to be included in polling later on.
           type: string
           example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
 
-    FailedOutput:
+    SearchRequestFailed:
       description: TODO
       properties:
         resultCode:
+          description: TODO
           type: integer
           default: 400
         message:
+          description: TODO
           type: string
           example: "Broken search request"
 
-    # sub schemas
+    # Poll
+    SearchResultPoll:
+      description: TODO
+      required:
+        - requestId
+      properties:
+        requestId:
+          description: This is the request ID for which to be polled.
+          type: string
+          example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+
+    SearchResult:
+      description: TODO
+      properties:
+        resultCode:
+          description: TODO
+          type: integer
+          example: 200
+        message:
+          description: TODO
+          type: string
+          example: Any error message goes here.
+        currency:
+          description: This is the 3-letter currency code in which price is provided.
+          type: string
+          example: EUR
+
+    # Domain Models
     Query:
       description: This is a flight query from departure airport to arrival airport on specific departure date. This query corresponding to a single flight in a trip, where a one-way trip contains only one flight and a round trip contains two flights.
       required:
@@ -145,7 +164,7 @@ components:
           pattern: '^\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$'
           example: "20210401"
 
-    # enums
+    # Enums
     FareClass:
       description: This is the fare class, which is one of `Economy`, `PremiumEconomy`, `Business`, `First` and `All`, where `All` means query for all fare classes.
       type: string

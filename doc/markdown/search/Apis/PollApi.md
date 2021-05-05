@@ -1,29 +1,29 @@
-# ResultsApi
+# PollApi
 
 All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**pollResult**](ResultsApi.md#pollResult) | **POST** /results | 
+[**createPoll**](PollApi.md#createPoll) | **POST** /polls | 
 
 
-<a name="pollResult"></a>
-# **pollResult**
-> PollResult pollResult(PollRequest)
+<a name="createPoll"></a>
+# **createPoll**
+> SearchResult createPoll(SearchResultPoll)
 
 
 
-    poll search results for flights
+    Call this endpoint to poll for search results.
 
 ### Parameters
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **PollRequest** | [**PollRequest**](../Models/PollRequest.md)|  | [optional]
+ **SearchResultPoll** | [**SearchResultPoll**](../Models/SearchResultPoll.md)|  | [optional]
 
 ### Return type
 
-[**PollResult**](../Models/PollResult.md)
+[**SearchResult**](../Models/SearchResult.md)
 
 ### Authorization
 

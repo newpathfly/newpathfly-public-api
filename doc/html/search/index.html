@@ -846,40 +846,11 @@ ul.nav-tabs {
   <script>
     // Script section to load models into a JS Var
     var defs = {}
-    defs["FailedOutput"] = {
-  "properties" : {
-    "resultCode" : {
-      "type" : "integer",
-      "default" : 400
-    },
-    "message" : {
-      "type" : "string",
-      "example" : "Broken search request"
-    }
-  },
-  "description" : "TODO"
-};
     defs["FareClass"] = {
   "type" : "string",
   "description" : "This is the fare class, which is one of `Economy`, `PremiumEconomy`, `Business`, `First` and `All`, where `All` means query for all fare classes.",
-  "enum" : [ "Economy", "PremiumEconomy", "Business", "First", "All" ],
-  "default" : "Economy"
-};
-    defs["PollRequest"] = {
-  "properties" : {
-    "whatever" : {
-      "type" : "string"
-    }
-  },
-  "description" : "TODO"
-};
-    defs["PollResult"] = {
-  "properties" : {
-    "whatever" : {
-      "type" : "string"
-    }
-  },
-  "description" : "TODO"
+  "default" : "Economy",
+  "enum" : [ "Economy", "PremiumEconomy", "Business", "First", "All" ]
 };
     defs["Query"] = {
   "required" : [ "arrAirport", "date", "depAirport" ],
@@ -942,7 +913,22 @@ ul.nav-tabs {
   },
   "description" : "TODO"
 };
-    defs["SuccessOutput"] = {
+    defs["SearchRequestFailed"] = {
+  "properties" : {
+    "resultCode" : {
+      "type" : "integer",
+      "description" : "TODO",
+      "default" : 400
+    },
+    "message" : {
+      "type" : "string",
+      "description" : "TODO",
+      "example" : "Broken search request"
+    }
+  },
+  "description" : "TODO"
+};
+    defs["SearchRequestSuccessful"] = {
   "properties" : {
     "resultCode" : {
       "type" : "integer",
@@ -950,6 +936,38 @@ ul.nav-tabs {
     },
     "requestId" : {
       "type" : "string",
+      "description" : "This is the request ID to be included in polling later on.",
+      "example" : "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+    }
+  },
+  "description" : "TODO"
+};
+    defs["SearchResult"] = {
+  "properties" : {
+    "resultCode" : {
+      "type" : "integer",
+      "description" : "TODO",
+      "example" : 200
+    },
+    "message" : {
+      "type" : "string",
+      "description" : "TODO",
+      "example" : "Any error message goes here."
+    },
+    "currency" : {
+      "type" : "string",
+      "description" : "This is the 3-letter currency code in which price is provided.",
+      "example" : "EUR"
+    }
+  },
+  "description" : "TODO"
+};
+    defs["SearchResultPoll"] = {
+  "required" : [ "requestId" ],
+  "properties" : {
+    "requestId" : {
+      "type" : "string",
+      "description" : "This is the request ID for which to be polled.",
       "example" : "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
     }
   },
@@ -958,8 +976,8 @@ ul.nav-tabs {
     defs["TripType"] = {
   "type" : "string",
   "description" : "This is the trip type, where `OW` is for one-way trip and `RT` is for round trip.",
-  "enum" : [ "OW", "RT" ],
-  "default" : "OW"
+  "default" : "OW",
+  "enum" : [ "OW", "RT" ]
 };
 
     var errs = {};
@@ -979,13 +997,13 @@ ul.nav-tabs {
             -->
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
-                  <li class="nav-header" data-group="Requests"><a href="#api-Requests">API Methods - Requests</a></li>
-                    <li data-group="Requests" data-name="createRequest" class="">
-                      <a href="#api-Requests-createRequest">createRequest</a>
+                  <li class="nav-header" data-group="Poll"><a href="#api-Poll">API Methods - Poll</a></li>
+                    <li data-group="Poll" data-name="createPoll" class="">
+                      <a href="#api-Poll-createPoll">createPoll</a>
                     </li>
-                  <li class="nav-header" data-group="Results"><a href="#api-Results">API Methods - Results</a></li>
-                    <li data-group="Results" data-name="pollResult" class="">
-                      <a href="#api-Results-pollResult">pollResult</a>
+                  <li class="nav-header" data-group="Search"><a href="#api-Search">API Methods - Search</a></li>
+                    <li data-group="Search" data-name="createSearch" class="">
+                      <a href="#api-Search-createSearch">createSearch</a>
                     </li>
           </ul>
         </nav>
@@ -1003,72 +1021,72 @@ ul.nav-tabs {
               <div class="app-desc">Version: 2.1.0</div>
             <hr>
             <div id="app-description" class="app-desc">
-                API for flight search
+                This API is intended for backend integration only. It is not designed for calling from a frontend directly.
             </div>
           </div>
         </div>
         <div id="sections">
-                <section id="api-Requests">
-                  <h1>Requests</h1>
-                    <div id="api-Requests-createRequest">
-                      <article id="api-Requests-createRequest-0" data-group="User" data-name="createRequest" data-version="0">
+                <section id="api-Poll">
+                  <h1>Poll</h1>
+                    <div id="api-Poll-createPoll">
+                      <article id="api-Poll-createPoll-0" data-group="User" data-name="createPoll" data-version="0">
                         <div class="pull-left">
-                          <h1>createRequest</h1>
+                          <h1>createPoll</h1>
                           <p></p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">TODO</p>
+                        <p class="marked">Call this endpoint to poll for search results.</p>
                         <p></p>
                         <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/requests</span></code></pre>
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/polls</span></code></pre>
                         <p>
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Requests-createRequest-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Requests-createRequest-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Requests-createRequest-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Requests-createRequest-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Requests-createRequest-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Requests-createRequest-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Requests-createRequest-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Requests-createRequest-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Requests-createRequest-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Requests-createRequest-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Requests-createRequest-0-python">Python</a></li>
-                          <li class=""><a href="#examples-Requests-createRequest-0-rust">Rust</a></li>
+                          <li class="active"><a href="#examples-Poll-createPoll-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Poll-createPoll-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Poll-createPoll-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Poll-createPoll-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Poll-createPoll-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Poll-createPoll-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Poll-createPoll-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Poll-createPoll-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Poll-createPoll-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Poll-createPoll-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Poll-createPoll-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Poll-createPoll-0-rust">Rust</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Requests-createRequest-0-curl">
+                          <div class="tab-pane active" id="examples-Poll-createPoll-0-curl">
                             <pre class="prettyprint"><code class="language-bsh">curl -X POST\
  -H "Accept: application/json"\
  -H "Content-Type: application/json"\
- "http://localhost:8080/requests"</code></pre>
+ "http://localhost:8080/polls"</code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-Requests-createRequest-0-java">
+                          <div class="tab-pane" id="examples-Poll-createPoll-0-java">
                             <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
 import org.openapitools.client.auth.*;
 import org.openapitools.client.model.*;
-import org.openapitools.client.api.RequestsApi;
+import org.openapitools.client.api.PollApi;
 
 import java.io.File;
 import java.util.*;
 
-public class RequestsApiExample {
+public class PollApiExample {
     public static void main(String[] args) {
         
         // Create an instance of the API class
-        RequestsApi apiInstance = new RequestsApi();
-        SearchRequest searchRequest = ; // SearchRequest | 
+        PollApi apiInstance = new PollApi();
+        SearchResultPoll searchResultPoll = ; // SearchResultPoll | 
         
         try {
-            SuccessOutput result = apiInstance.createRequest(searchRequest);
+            SearchResult result = apiInstance.createPoll(searchResultPoll);
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling RequestsApi#createRequest");
+            System.err.println("Exception when calling PollApi#createPoll");
             e.printStackTrace();
         }
     }
@@ -1076,37 +1094,37 @@ public class RequestsApiExample {
 </code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-Requests-createRequest-0-android">
-                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.RequestsApi;
+                          <div class="tab-pane" id="examples-Poll-createPoll-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.PollApi;
 
-public class RequestsApiExample {
+public class PollApiExample {
     public static void main(String[] args) {
-        RequestsApi apiInstance = new RequestsApi();
-        SearchRequest searchRequest = ; // SearchRequest | 
+        PollApi apiInstance = new PollApi();
+        SearchResultPoll searchResultPoll = ; // SearchResultPoll | 
         
         try {
-            SuccessOutput result = apiInstance.createRequest(searchRequest);
+            SearchResult result = apiInstance.createPoll(searchResultPoll);
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling RequestsApi#createRequest");
+            System.err.println("Exception when calling PollApi#createPoll");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-Requests-createRequest-0-groovy">
+  <div class="tab-pane" id="examples-Poll-createPoll-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-Requests-createRequest-0-objc">
+                            <div class="tab-pane" id="examples-Poll-createPoll-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">
 
 // Create an instance of the API class
-RequestsApi *apiInstance = [[RequestsApi alloc] init];
-SearchRequest *searchRequest = ; //  (optional)
+PollApi *apiInstance = [[PollApi alloc] init];
+SearchResultPoll *searchResultPoll = ; //  (optional)
 
-[apiInstance createRequestWith:searchRequest
-              completionHandler: ^(SuccessOutput output, NSError* error) {
+[apiInstance createPollWith:searchResultPoll
+              completionHandler: ^(SearchResult output, NSError* error) {
     if (output) {
         NSLog(@"%@", output);
     }
@@ -1117,11 +1135,370 @@ SearchRequest *searchRequest = ; //  (optional)
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Requests-createRequest-0-javascript">
+                            <div class="tab-pane" id="examples-Poll-createPoll-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var FlightSearchApi = require('flight_search_api');
 
 // Create an instance of the API class
-var api = new FlightSearchApi.RequestsApi()
+var api = new FlightSearchApi.PollApi()
+var opts = {
+  'searchResultPoll':  // {SearchResultPoll} 
+};
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.createPoll(opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Poll-createPoll-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Poll-createPoll-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class createPollExample
+    {
+        public void main()
+        {
+            
+            // Create an instance of the API class
+            var apiInstance = new PollApi();
+            var searchResultPoll = new SearchResultPoll(); // SearchResultPoll |  (optional) 
+
+            try {
+                SearchResult result = apiInstance.createPoll(searchResultPoll);
+                Debug.WriteLine(result);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling PollApi.createPoll: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Poll-createPoll-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\PollApi();
+$searchResultPoll = ; // SearchResultPoll | 
+
+try {
+    $result = $api_instance->createPoll($searchResultPoll);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling PollApi->createPoll: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Poll-createPoll-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::PollApi;
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::PollApi->new();
+my $searchResultPoll = WWW::OPenAPIClient::Object::SearchResultPoll->new(); # SearchResultPoll | 
+
+eval { 
+    my $result = $api_instance->createPoll(searchResultPoll => $searchResultPoll);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling PollApi->createPoll: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Poll-createPoll-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+
+# Create an instance of the API class
+api_instance = openapi_client.PollApi()
+searchResultPoll =  # SearchResultPoll |  (optional)
+
+try: 
+    api_response = api_instance.create_poll(searchResultPoll=searchResultPoll)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling PollApi->createPoll: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Poll-createPoll-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate PollApi;
+
+pub fn main() {
+    let searchResultPoll = ; // SearchResultPoll
+
+    let mut context = PollApi::Context::default();
+    let result = client.createPoll(searchResultPoll, &context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">searchResultPoll </td>
+<td>
+<p class="marked"></p>
+<script>
+$(document).ready(function() {
+  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/SearchResultPoll"
+      }
+    }
+  }
+};
+
+  var schema = findNode('schema',schemaWrapper).schema;
+  if (!schema) {
+    schema = schemaWrapper.schema;
+  }
+  if (schema.$ref != null) {
+    schema = defsParser.$refs.get(schema.$ref);
+  } else {
+    schemaWrapper.definitions = Object.assign({}, defs);
+    $RefParser.dereference(schemaWrapper).catch(function(err) {
+      console.log(err);
+    });
+  }
+
+  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+  var result = $('#d2e199_createPoll_searchResultPoll');
+  result.empty();
+  result.append(view.render());
+});
+</script>
+<div id="d2e199_createPoll_searchResultPoll"></div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-Poll-createPoll-title-200"></h3>
+                            <p id="examples-Poll-createPoll-description-200" class="marked"></p>
+                            <script>
+                              var responsePoll200_description = `OK`;
+                              var responsePoll200_description_break = responsePoll200_description.indexOf('\n');
+                              if (responsePoll200_description_break == -1) {
+                                $("#examples-Poll-createPoll-title-200").text("Status: 200 - " + responsePoll200_description);
+                              } else {
+                                $("#examples-Poll-createPoll-title-200").text("Status: 200 - " + responsePoll200_description.substring(0, responsePoll200_description_break));
+                                $("#examples-Poll-createPoll-description-200").html(responsePoll200_description.substring(responsePoll200_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Poll-createPoll-200" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-Poll-createPoll-200-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Poll-createPoll-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Poll-createPoll-200-schema">
+                                  <div id="responses-Poll-createPoll-schema-200" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "OK",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/SearchResult"
+      }
+    }
+  }
+};
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-Poll-createPoll-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Poll-createPoll-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-Poll-createPoll-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-Search">
+                  <h1>Search</h1>
+                    <div id="api-Search-createSearch">
+                      <article id="api-Search-createSearch-0" data-group="User" data-name="createSearch" data-version="0">
+                        <div class="pull-left">
+                          <h1>createSearch</h1>
+                          <p>Call this endpoint to create a search request.</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">TODO</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/searches</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Search-createSearch-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Search-createSearch-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Search-createSearch-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Search-createSearch-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Search-createSearch-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Search-createSearch-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Search-createSearch-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Search-createSearch-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Search-createSearch-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Search-createSearch-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Search-createSearch-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Search-createSearch-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Search-createSearch-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+ -H "Accept: application/json"\
+ -H "Content-Type: application/json"\
+ "http://localhost:8080/searches"</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Search-createSearch-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.SearchApi;
+
+import java.io.File;
+import java.util.*;
+
+public class SearchApiExample {
+    public static void main(String[] args) {
+        
+        // Create an instance of the API class
+        SearchApi apiInstance = new SearchApi();
+        SearchRequest searchRequest = ; // SearchRequest | 
+        
+        try {
+            SearchRequestSuccessful result = apiInstance.createSearch(searchRequest);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling SearchApi#createSearch");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Search-createSearch-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.SearchApi;
+
+public class SearchApiExample {
+    public static void main(String[] args) {
+        SearchApi apiInstance = new SearchApi();
+        SearchRequest searchRequest = ; // SearchRequest | 
+        
+        try {
+            SearchRequestSuccessful result = apiInstance.createSearch(searchRequest);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling SearchApi#createSearch");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Search-createSearch-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Search-createSearch-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+
+// Create an instance of the API class
+SearchApi *apiInstance = [[SearchApi alloc] init];
+SearchRequest *searchRequest = ; //  (optional)
+
+// Call this endpoint to create a search request.
+[apiInstance createSearchWith:searchRequest
+              completionHandler: ^(SearchRequestSuccessful output, NSError* error) {
+    if (output) {
+        NSLog(@"%@", output);
+    }
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Search-createSearch-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var FlightSearchApi = require('flight_search_api');
+
+// Create an instance of the API class
+var api = new FlightSearchApi.SearchApi()
 var opts = {
   'searchRequest':  // {SearchRequest} 
 };
@@ -1133,14 +1510,14 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.createRequest(opts, callback);
+api.createSearch(opts, callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-Requests-createRequest-0-angular">
+                            <!--<div class="tab-pane" id="examples-Search-createSearch-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-Requests-createRequest-0-csharp">
+                            <div class="tab-pane" id="examples-Search-createSearch-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using Org.OpenAPITools.Api;
@@ -1149,20 +1526,21 @@ using Org.OpenAPITools.Model;
 
 namespace Example
 {
-    public class createRequestExample
+    public class createSearchExample
     {
         public void main()
         {
             
             // Create an instance of the API class
-            var apiInstance = new RequestsApi();
+            var apiInstance = new SearchApi();
             var searchRequest = new SearchRequest(); // SearchRequest |  (optional) 
 
             try {
-                SuccessOutput result = apiInstance.createRequest(searchRequest);
+                // Call this endpoint to create a search request.
+                SearchRequestSuccessful result = apiInstance.createSearch(searchRequest);
                 Debug.WriteLine(result);
             } catch (Exception e) {
-                Debug.Print("Exception when calling RequestsApi.createRequest: " + e.Message );
+                Debug.Print("Exception when calling SearchApi.createSearch: " + e.Message );
             }
         }
     }
@@ -1170,42 +1548,42 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Requests-createRequest-0-php">
+                            <div class="tab-pane" id="examples-Search-createSearch-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
 // Create an instance of the API class
-$api_instance = new OpenAPITools\Client\Api\RequestsApi();
+$api_instance = new OpenAPITools\Client\Api\SearchApi();
 $searchRequest = ; // SearchRequest | 
 
 try {
-    $result = $api_instance->createRequest($searchRequest);
+    $result = $api_instance->createSearch($searchRequest);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling RequestsApi->createRequest: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling SearchApi->createSearch: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Requests-createRequest-0-perl">
+                            <div class="tab-pane" id="examples-Search-createSearch-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
-use WWW::OPenAPIClient::RequestsApi;
+use WWW::OPenAPIClient::SearchApi;
 
 # Create an instance of the API class
-my $api_instance = WWW::OPenAPIClient::RequestsApi->new();
+my $api_instance = WWW::OPenAPIClient::SearchApi->new();
 my $searchRequest = WWW::OPenAPIClient::Object::SearchRequest->new(); # SearchRequest | 
 
 eval { 
-    my $result = $api_instance->createRequest(searchRequest => $searchRequest);
+    my $result = $api_instance->createSearch(searchRequest => $searchRequest);
     print Dumper($result);
 };
 if ($@) {
-    warn "Exception when calling RequestsApi->createRequest: $@\n";
+    warn "Exception when calling SearchApi->createSearch: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Requests-createRequest-0-python">
+                            <div class="tab-pane" id="examples-Search-createSearch-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import openapi_client
@@ -1213,24 +1591,25 @@ from openapi_client.rest import ApiException
 from pprint import pprint
 
 # Create an instance of the API class
-api_instance = openapi_client.RequestsApi()
+api_instance = openapi_client.SearchApi()
 searchRequest =  # SearchRequest |  (optional)
 
 try: 
-    api_response = api_instance.create_request(searchRequest=searchRequest)
+    # Call this endpoint to create a search request.
+    api_response = api_instance.create_search(searchRequest=searchRequest)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling RequestsApi->createRequest: %s\n" % e)</code></pre>
+    print("Exception when calling SearchApi->createSearch: %s\n" % e)</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Requests-createRequest-0-rust">
-                              <pre class="prettyprint"><code class="language-rust">extern crate RequestsApi;
+                            <div class="tab-pane" id="examples-Search-createSearch-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate SearchApi;
 
 pub fn main() {
     let searchRequest = ; // SearchRequest
 
-    let mut context = RequestsApi::Context::default();
-    let result = client.createRequest(searchRequest, &context).wait();
+    let mut context = SearchApi::Context::default();
+    let result = client.createSearch(searchRequest, &context).wait();
 
     println!("{:?}", result);
 }
@@ -1282,12 +1661,12 @@ $(document).ready(function() {
   }
 
   var view = new JSONSchemaView(schema,2,{isBodyParam: true});
-  var result = $('#d2e199_createRequest_searchRequest');
+  var result = $('#d2e199_createSearch_searchRequest');
   result.empty();
   result.append(view.render());
 });
 </script>
-<div id="d2e199_createRequest_searchRequest"></div>
+<div id="d2e199_createSearch_searchRequest"></div>
 </td>
 </tr>
 
@@ -1296,23 +1675,23 @@ $(document).ready(function() {
 
 
                           <h2>Responses</h2>
-                            <h3 id="examples-Requests-createRequest-title-200"></h3>
-                            <p id="examples-Requests-createRequest-description-200" class="marked"></p>
+                            <h3 id="examples-Search-createSearch-title-200"></h3>
+                            <p id="examples-Search-createSearch-description-200" class="marked"></p>
                             <script>
-                              var responseRequests200_description = `OK`;
-                              var responseRequests200_description_break = responseRequests200_description.indexOf('\n');
-                              if (responseRequests200_description_break == -1) {
-                                $("#examples-Requests-createRequest-title-200").text("Status: 200 - " + responseRequests200_description);
+                              var responseSearch200_description = `OK`;
+                              var responseSearch200_description_break = responseSearch200_description.indexOf('\n');
+                              if (responseSearch200_description_break == -1) {
+                                $("#examples-Search-createSearch-title-200").text("Status: 200 - " + responseSearch200_description);
                               } else {
-                                $("#examples-Requests-createRequest-title-200").text("Status: 200 - " + responseRequests200_description.substring(0, responseRequests200_description_break));
-                                $("#examples-Requests-createRequest-description-200").html(responseRequests200_description.substring(responseRequests200_description_break));
+                                $("#examples-Search-createSearch-title-200").text("Status: 200 - " + responseSearch200_description.substring(0, responseSearch200_description_break));
+                                $("#examples-Search-createSearch-description-200").html(responseSearch200_description.substring(responseSearch200_description_break));
                               }
                             </script>
 
 
-                            <ul id="responses-detail-Requests-createRequest-200" class="nav nav-tabs nav-tabs-examples" >
+                            <ul id="responses-detail-Search-createSearch-200" class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
-                                  <a data-toggle="tab" href="#responses-Requests-createRequest-200-schema">Schema</a>
+                                  <a data-toggle="tab" href="#responses-Search-createSearch-200-schema">Schema</a>
                                 </li>
 
 
@@ -1321,9 +1700,9 @@ $(document).ready(function() {
                             </ul>
 
 
-                            <div class="tab-content" id="responses-Requests-createRequest-200-wrapper" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-Requests-createRequest-200-schema">
-                                  <div id="responses-Requests-createRequest-schema-200" class="exampleStyle">
+                            <div class="tab-content" id="responses-Search-createSearch-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Search-createSearch-200-schema">
+                                  <div id="responses-Search-createSearch-schema-200" class="exampleStyle">
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
@@ -1331,7 +1710,7 @@ $(document).ready(function() {
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/SuccessOutput"
+        "$ref" : "#/components/schemas/SearchRequestSuccessful"
       }
     }
   }
@@ -1352,33 +1731,33 @@ $(document).ready(function() {
                                         }
 
                                         var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-Requests-createRequest-200-schema-data').val(JSON.stringify(schema));
-                                        var result = $('#responses-Requests-createRequest-schema-200');
+                                        $('#responses-Search-createSearch-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Search-createSearch-schema-200');
                                         result.empty();
                                         result.append(view.render());
                                       });
                                     </script>
                                   </div>
-                                  <input id='responses-Requests-createRequest-200-schema-data' type='hidden' value=''></input>
+                                  <input id='responses-Search-createSearch-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
-                            <h3 id="examples-Requests-createRequest-title-400"></h3>
-                            <p id="examples-Requests-createRequest-description-400" class="marked"></p>
+                            <h3 id="examples-Search-createSearch-title-400"></h3>
+                            <p id="examples-Search-createSearch-description-400" class="marked"></p>
                             <script>
-                              var responseRequests400_description = `Bad Request`;
-                              var responseRequests400_description_break = responseRequests400_description.indexOf('\n');
-                              if (responseRequests400_description_break == -1) {
-                                $("#examples-Requests-createRequest-title-400").text("Status: 400 - " + responseRequests400_description);
+                              var responseSearch400_description = `Bad Request`;
+                              var responseSearch400_description_break = responseSearch400_description.indexOf('\n');
+                              if (responseSearch400_description_break == -1) {
+                                $("#examples-Search-createSearch-title-400").text("Status: 400 - " + responseSearch400_description);
                               } else {
-                                $("#examples-Requests-createRequest-title-400").text("Status: 400 - " + responseRequests400_description.substring(0, responseRequests400_description_break));
-                                $("#examples-Requests-createRequest-description-400").html(responseRequests400_description.substring(responseRequests400_description_break));
+                                $("#examples-Search-createSearch-title-400").text("Status: 400 - " + responseSearch400_description.substring(0, responseSearch400_description_break));
+                                $("#examples-Search-createSearch-description-400").html(responseSearch400_description.substring(responseSearch400_description_break));
                               }
                             </script>
 
 
-                            <ul id="responses-detail-Requests-createRequest-400" class="nav nav-tabs nav-tabs-examples" >
+                            <ul id="responses-detail-Search-createSearch-400" class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
-                                  <a data-toggle="tab" href="#responses-Requests-createRequest-400-schema">Schema</a>
+                                  <a data-toggle="tab" href="#responses-Search-createSearch-400-schema">Schema</a>
                                 </li>
 
 
@@ -1387,9 +1766,9 @@ $(document).ready(function() {
                             </ul>
 
 
-                            <div class="tab-content" id="responses-Requests-createRequest-400-wrapper" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-Requests-createRequest-400-schema">
-                                  <div id="responses-Requests-createRequest-schema-400" class="exampleStyle">
+                            <div class="tab-content" id="responses-Search-createSearch-400-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Search-createSearch-400-schema">
+                                  <div id="responses-Search-createSearch-schema-400" class="exampleStyle">
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
@@ -1397,7 +1776,7 @@ $(document).ready(function() {
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/FailedOutput"
+        "$ref" : "#/components/schemas/SearchRequestFailed"
       }
     }
   }
@@ -1418,372 +1797,14 @@ $(document).ready(function() {
                                         }
 
                                         var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-Requests-createRequest-400-schema-data').val(JSON.stringify(schema));
-                                        var result = $('#responses-Requests-createRequest-schema-400');
+                                        $('#responses-Search-createSearch-400-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Search-createSearch-schema-400');
                                         result.empty();
                                         result.append(view.render());
                                       });
                                     </script>
                                   </div>
-                                  <input id='responses-Requests-createRequest-400-schema-data' type='hidden' value=''></input>
-                                </div>
-                            </div>
-                        </article>
-                      </div>
-                      <hr>
-                  </section>
-                <section id="api-Results">
-                  <h1>Results</h1>
-                    <div id="api-Results-pollResult">
-                      <article id="api-Results-pollResult-0" data-group="User" data-name="pollResult" data-version="0">
-                        <div class="pull-left">
-                          <h1>pollResult</h1>
-                          <p></p>
-                        </div>
-                        <div class="pull-right"></div>
-                        <div class="clearfix"></div>
-                        <p></p>
-                        <p class="marked">poll search results for flights</p>
-                        <p></p>
-                        <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/results</span></code></pre>
-                        <p>
-                          <h3>Usage and SDK Samples</h3>
-                        </p>
-                        <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Results-pollResult-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Results-pollResult-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Results-pollResult-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Results-pollResult-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Results-pollResult-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Results-pollResult-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Results-pollResult-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Results-pollResult-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Results-pollResult-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Results-pollResult-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Results-pollResult-0-python">Python</a></li>
-                          <li class=""><a href="#examples-Results-pollResult-0-rust">Rust</a></li>
-                        </ul>
-
-                        <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Results-pollResult-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X POST\
- -H "Accept: application/json"\
- -H "Content-Type: application/json"\
- "http://localhost:8080/results"</code></pre>
-                          </div>
-                          <div class="tab-pane" id="examples-Results-pollResult-0-java">
-                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
-import org.openapitools.client.auth.*;
-import org.openapitools.client.model.*;
-import org.openapitools.client.api.ResultsApi;
-
-import java.io.File;
-import java.util.*;
-
-public class ResultsApiExample {
-    public static void main(String[] args) {
-        
-        // Create an instance of the API class
-        ResultsApi apiInstance = new ResultsApi();
-        PollRequest pollRequest = ; // PollRequest | 
-        
-        try {
-            PollResult result = apiInstance.pollResult(pollRequest);
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling ResultsApi#pollResult");
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
-                          </div>
-
-                          <div class="tab-pane" id="examples-Results-pollResult-0-android">
-                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.ResultsApi;
-
-public class ResultsApiExample {
-    public static void main(String[] args) {
-        ResultsApi apiInstance = new ResultsApi();
-        PollRequest pollRequest = ; // PollRequest | 
-        
-        try {
-            PollResult result = apiInstance.pollResult(pollRequest);
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling ResultsApi#pollResult");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                          </div>
-  <!--
-  <div class="tab-pane" id="examples-Results-pollResult-0-groovy">
-  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-  </div> -->
-                            <div class="tab-pane" id="examples-Results-pollResult-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">
-
-// Create an instance of the API class
-ResultsApi *apiInstance = [[ResultsApi alloc] init];
-PollRequest *pollRequest = ; //  (optional)
-
-[apiInstance pollResultWith:pollRequest
-              completionHandler: ^(PollResult output, NSError* error) {
-    if (output) {
-        NSLog(@"%@", output);
-    }
-    if (error) {
-        NSLog(@"Error: %@", error);
-    }
-}];
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Results-pollResult-0-javascript">
-                              <pre class="prettyprint"><code class="language-js">var FlightSearchApi = require('flight_search_api');
-
-// Create an instance of the API class
-var api = new FlightSearchApi.ResultsApi()
-var opts = {
-  'pollRequest':  // {PollRequest} 
-};
-
-var callback = function(error, data, response) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API called successfully. Returned data: ' + data);
-  }
-};
-api.pollResult(opts, callback);
-</code></pre>
-                            </div>
-
-                            <!--<div class="tab-pane" id="examples-Results-pollResult-0-angular">
-              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-            </div>-->
-                            <div class="tab-pane" id="examples-Results-pollResult-0-csharp">
-                              <pre class="prettyprint"><code class="language-cs">using System;
-using System.Diagnostics;
-using Org.OpenAPITools.Api;
-using Org.OpenAPITools.Client;
-using Org.OpenAPITools.Model;
-
-namespace Example
-{
-    public class pollResultExample
-    {
-        public void main()
-        {
-            
-            // Create an instance of the API class
-            var apiInstance = new ResultsApi();
-            var pollRequest = new PollRequest(); // PollRequest |  (optional) 
-
-            try {
-                PollResult result = apiInstance.pollResult(pollRequest);
-                Debug.WriteLine(result);
-            } catch (Exception e) {
-                Debug.Print("Exception when calling ResultsApi.pollResult: " + e.Message );
-            }
-        }
-    }
-}
-</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Results-pollResult-0-php">
-                              <pre class="prettyprint"><code class="language-php"><&#63;php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-// Create an instance of the API class
-$api_instance = new OpenAPITools\Client\Api\ResultsApi();
-$pollRequest = ; // PollRequest | 
-
-try {
-    $result = $api_instance->pollResult($pollRequest);
-    print_r($result);
-} catch (Exception $e) {
-    echo 'Exception when calling ResultsApi->pollResult: ', $e->getMessage(), PHP_EOL;
-}
-?></code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Results-pollResult-0-perl">
-                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
-use WWW::OPenAPIClient::Configuration;
-use WWW::OPenAPIClient::ResultsApi;
-
-# Create an instance of the API class
-my $api_instance = WWW::OPenAPIClient::ResultsApi->new();
-my $pollRequest = WWW::OPenAPIClient::Object::PollRequest->new(); # PollRequest | 
-
-eval { 
-    my $result = $api_instance->pollResult(pollRequest => $pollRequest);
-    print Dumper($result);
-};
-if ($@) {
-    warn "Exception when calling ResultsApi->pollResult: $@\n";
-}</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Results-pollResult-0-python">
-                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
-import time
-import openapi_client
-from openapi_client.rest import ApiException
-from pprint import pprint
-
-# Create an instance of the API class
-api_instance = openapi_client.ResultsApi()
-pollRequest =  # PollRequest |  (optional)
-
-try: 
-    api_response = api_instance.poll_result(pollRequest=pollRequest)
-    pprint(api_response)
-except ApiException as e:
-    print("Exception when calling ResultsApi->pollResult: %s\n" % e)</code></pre>
-                            </div>
-
-                            <div class="tab-pane" id="examples-Results-pollResult-0-rust">
-                              <pre class="prettyprint"><code class="language-rust">extern crate ResultsApi;
-
-pub fn main() {
-    let pollRequest = ; // PollRequest
-
-    let mut context = ResultsApi::Context::default();
-    let result = client.pollResult(pollRequest, &context).wait();
-
-    println!("{:?}", result);
-}
-</code></pre>
-                            </div>
-                          </div>
-
-                          <h2>Scopes</h2>
-                          <table>
-                            
-                          </table>
-
-                          <h2>Parameters</h2>
-
-
-
-                            <div class="methodsubtabletitle">Body parameters</div>
-                            <table id="methodsubtable">
-                              <tr>
-                                <th width="150px">Name</th>
-                                <th>Description</th>
-                              </tr>
-                                <tr><td style="width:150px;">pollRequest </td>
-<td>
-<p class="marked"></p>
-<script>
-$(document).ready(function() {
-  var schemaWrapper = {
-  "content" : {
-    "application/json" : {
-      "schema" : {
-        "$ref" : "#/components/schemas/PollRequest"
-      }
-    }
-  }
-};
-
-  var schema = findNode('schema',schemaWrapper).schema;
-  if (!schema) {
-    schema = schemaWrapper.schema;
-  }
-  if (schema.$ref != null) {
-    schema = defsParser.$refs.get(schema.$ref);
-  } else {
-    schemaWrapper.definitions = Object.assign({}, defs);
-    $RefParser.dereference(schemaWrapper).catch(function(err) {
-      console.log(err);
-    });
-  }
-
-  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
-  var result = $('#d2e199_pollResult_pollRequest');
-  result.empty();
-  result.append(view.render());
-});
-</script>
-<div id="d2e199_pollResult_pollRequest"></div>
-</td>
-</tr>
-
-                            </table>
-
-
-
-                          <h2>Responses</h2>
-                            <h3 id="examples-Results-pollResult-title-200"></h3>
-                            <p id="examples-Results-pollResult-description-200" class="marked"></p>
-                            <script>
-                              var responseResults200_description = `OK`;
-                              var responseResults200_description_break = responseResults200_description.indexOf('\n');
-                              if (responseResults200_description_break == -1) {
-                                $("#examples-Results-pollResult-title-200").text("Status: 200 - " + responseResults200_description);
-                              } else {
-                                $("#examples-Results-pollResult-title-200").text("Status: 200 - " + responseResults200_description.substring(0, responseResults200_description_break));
-                                $("#examples-Results-pollResult-description-200").html(responseResults200_description.substring(responseResults200_description_break));
-                              }
-                            </script>
-
-
-                            <ul id="responses-detail-Results-pollResult-200" class="nav nav-tabs nav-tabs-examples" >
-                                <li class="active">
-                                  <a data-toggle="tab" href="#responses-Results-pollResult-200-schema">Schema</a>
-                                </li>
-
-
-
-
-                            </ul>
-
-
-                            <div class="tab-content" id="responses-Results-pollResult-200-wrapper" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-Results-pollResult-200-schema">
-                                  <div id="responses-Results-pollResult-schema-200" class="exampleStyle">
-                                    <script>
-                                      $(document).ready(function() {
-                                        var schemaWrapper = {
-  "description" : "OK",
-  "content" : {
-    "application/json" : {
-      "schema" : {
-        "$ref" : "#/components/schemas/PollResult"
-      }
-    }
-  }
-};
-                                        var schema = findNode('schema',schemaWrapper).schema;
-                                        if (!schema) {
-                                          schema = schemaWrapper.schema;
-                                        }
-                                        if (schema.$ref != null) {
-                                          schema = defsParser.$refs.get(schema.$ref);
-                                        } else if (schema.items != null && schema.items.$ref != null) {
-                                            schema.items = defsParser.$refs.get(schema.items.$ref);
-                                        } else {
-                                          schemaWrapper.definitions = Object.assign({}, defs);
-                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
-                                            console.log(err);
-                                          });
-                                        }
-
-                                        var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-Results-pollResult-200-schema-data').val(JSON.stringify(schema));
-                                        var result = $('#responses-Results-pollResult-schema-200');
-                                        result.empty();
-                                        result.append(view.render());
-                                      });
-                                    </script>
-                                  </div>
-                                  <input id='responses-Results-pollResult-200-schema-data' type='hidden' value=''></input>
+                                  <input id='responses-Search-createSearch-400-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
                         </article>
@@ -1794,11 +1815,10 @@ $(document).ready(function() {
           <div id="footer">
             <div id="api-_footer">
               <p>Suggestions, contact, support and error reporting;
-                  <div class="app-desc">Information URL: <a href="https://openapi-generator.tech">https://openapi-generator.tech</a></div>
-                  <div class="app-desc">Contact Info: <a href="team@openapitools.org">team@openapitools.org</a></div>
+                  <div class="app-desc">Information URL: <a href="developer.newpathfly.com">developer.newpathfly.com</a></div>
+                  <div class="app-desc">Contact Info: <a href="support@newpathfly.com">support@newpathfly.com</a></div>
               </p>
                 <div class="license-info">All rights reserved</div>
-                <div class="license-url">http://apache.org/licenses/LICENSE-2.0.html</div>
             </div>
           </div>
       </div>

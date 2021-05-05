@@ -115,6 +115,11 @@
                             <inputSpec>${project.basedir}/src/main/resources/search.api.yaml</inputSpec>
                             <generatorName>html2</generatorName>
                             <output>${project.basedir}/doc/html/search</output>
+                            <configOptions>
+                                <infoUrl>developer.newpathfly.com</infoUrl>
+                                <infoEmail>support@newpathfly.com</infoEmail>
+                                <licenseUrl></licenseUrl>
+                            </configOptions>
                         </configuration>
                     </execution>
                     <execution>

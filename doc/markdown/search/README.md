@@ -7,20 +7,20 @@ All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*RequestsApi* | [**createRequest**](Apis/RequestsApi.md#createrequest) | **POST** /requests | TODO
-*ResultsApi* | [**pollResult**](Apis/ResultsApi.md#pollresult) | **POST** /results | poll search results for flights
+*PollApi* | [**createPoll**](Apis/PollApi.md#createpoll) | **POST** /polls | Call this endpoint to poll for search results.
+*SearchApi* | [**createSearch**](Apis/SearchApi.md#createsearch) | **POST** /searches | Call this endpoint to create a search request.
 
 
 <a name="documentation-for-models"></a>
 ## Documentation for Models
 
- - [FailedOutput](./Models/FailedOutput.md)
  - [FareClass](./Models/FareClass.md)
- - [PollRequest](./Models/PollRequest.md)
- - [PollResult](./Models/PollResult.md)
  - [Query](./Models/Query.md)
  - [SearchRequest](./Models/SearchRequest.md)
- - [SuccessOutput](./Models/SuccessOutput.md)
+ - [SearchRequestFailed](./Models/SearchRequestFailed.md)
+ - [SearchRequestSuccessful](./Models/SearchRequestSuccessful.md)
+ - [SearchResult](./Models/SearchResult.md)
+ - [SearchResultPoll](./Models/SearchResultPoll.md)
  - [TripType](./Models/TripType.md)
 
 
