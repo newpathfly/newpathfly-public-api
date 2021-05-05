@@ -846,33 +846,120 @@ ul.nav-tabs {
   <script>
     // Script section to load models into a JS Var
     var defs = {}
+    defs["FailedOutput"] = {
+  "properties" : {
+    "resultCode" : {
+      "type" : "integer",
+      "default" : 400
+    },
+    "message" : {
+      "type" : "string",
+      "example" : "Broken search request"
+    }
+  },
+  "description" : "TODO"
+};
+    defs["FareClass"] = {
+  "type" : "string",
+  "description" : "This is the fare class, which is one of `Economy`, `PremiumEconomy`, `Business`, `First` and `All`, where `All` means query for all fare classes.",
+  "enum" : [ "Economy", "PremiumEconomy", "Business", "First", "All" ],
+  "default" : "Economy"
+};
     defs["PollRequest"] = {
   "properties" : {
     "whatever" : {
       "type" : "string"
     }
-  }
+  },
+  "description" : "TODO"
 };
     defs["PollResult"] = {
   "properties" : {
     "whatever" : {
       "type" : "string"
     }
-  }
+  },
+  "description" : "TODO"
+};
+    defs["Query"] = {
+  "required" : [ "arrAirport", "date", "depAirport" ],
+  "properties" : {
+    "depAirport" : {
+      "maxLength" : 3,
+      "minLength" : 3,
+      "type" : "string",
+      "description" : "This is the departure airport specified using its IATA code.",
+      "example" : "LON"
+    },
+    "arrAirport" : {
+      "maxLength" : 3,
+      "minLength" : 3,
+      "type" : "string",
+      "description" : "This is the arrival airport specified using its IATA code.",
+      "example" : "CGN"
+    },
+    "date" : {
+      "pattern" : "^\\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$",
+      "type" : "string",
+      "description" : "This is the departure date in 'YYYYMMDD' format",
+      "example" : "20210401"
+    }
+  },
+  "description" : "This is a flight query from departure airport to arrival airport on specific departure date. This query corresponding to a single flight in a trip, where a one-way trip contains only one flight and a round trip contains two flights."
 };
     defs["SearchRequest"] = {
+  "required" : [ "adultAmount", "queries" ],
   "properties" : {
-    "whatever" : {
-      "type" : "string"
+    "queries" : {
+      "minItems" : 1,
+      "type" : "array",
+      "description" : "This is a list containing the same number of queries as the number of flights for the trip. For one-way trip there should be one query, whereas for round trip there should be two queries.",
+      "items" : {
+        "$ref" : "#/components/schemas/Query"
+      }
+    },
+    "type" : {
+      "$ref" : "#/components/schemas/TripType"
+    },
+    "adultAmount" : {
+      "minimum" : 1,
+      "type" : "integer",
+      "description" : "This is the number of adult passengers"
+    },
+    "childAmount" : {
+      "minimum" : 0,
+      "type" : "integer",
+      "description" : "This is the number of child passengers"
+    },
+    "infantAmount" : {
+      "minimum" : 0,
+      "type" : "integer",
+      "description" : "This is the number of infant passengers"
+    },
+    "fareClass" : {
+      "$ref" : "#/components/schemas/FareClass"
     }
-  }
+  },
+  "description" : "TODO"
 };
-    defs["SearchResult"] = {
+    defs["SuccessOutput"] = {
   "properties" : {
-    "whatever" : {
-      "type" : "string"
+    "resultCode" : {
+      "type" : "integer",
+      "default" : 200
+    },
+    "requestId" : {
+      "type" : "string",
+      "example" : "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
     }
-  }
+  },
+  "description" : "TODO"
+};
+    defs["TripType"] = {
+  "type" : "string",
+  "description" : "This is the trip type, where `OW` is for one-way trip and `RT` is for round trip.",
+  "enum" : [ "OW", "RT" ],
+  "default" : "OW"
 };
 
     var errs = {};
@@ -893,8 +980,8 @@ ul.nav-tabs {
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
                   <li class="nav-header" data-group="Requests"><a href="#api-Requests">API Methods - Requests</a></li>
-                    <li data-group="Requests" data-name="sendRequest" class="">
-                      <a href="#api-Requests-sendRequest">sendRequest</a>
+                    <li data-group="Requests" data-name="createRequest" class="">
+                      <a href="#api-Requests-createRequest">createRequest</a>
                     </li>
                   <li class="nav-header" data-group="Results"><a href="#api-Results">API Methods - Results</a></li>
                     <li data-group="Results" data-name="pollResult" class="">
@@ -923,16 +1010,16 @@ ul.nav-tabs {
         <div id="sections">
                 <section id="api-Requests">
                   <h1>Requests</h1>
-                    <div id="api-Requests-sendRequest">
-                      <article id="api-Requests-sendRequest-0" data-group="User" data-name="sendRequest" data-version="0">
+                    <div id="api-Requests-createRequest">
+                      <article id="api-Requests-createRequest-0" data-group="User" data-name="createRequest" data-version="0">
                         <div class="pull-left">
-                          <h1>sendRequest</h1>
+                          <h1>createRequest</h1>
                           <p></p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">send search request for flights</p>
+                        <p class="marked">TODO</p>
                         <p></p>
                         <br />
                         <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/requests</span></code></pre>
@@ -940,28 +1027,28 @@ ul.nav-tabs {
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Requests-sendRequest-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Requests-sendRequest-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Requests-sendRequest-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Requests-sendRequest-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Requests-sendRequest-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Requests-sendRequest-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Requests-sendRequest-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Requests-sendRequest-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Requests-sendRequest-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Requests-sendRequest-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Requests-sendRequest-0-python">Python</a></li>
-                          <li class=""><a href="#examples-Requests-sendRequest-0-rust">Rust</a></li>
+                          <li class="active"><a href="#examples-Requests-createRequest-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Requests-createRequest-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Requests-createRequest-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Requests-createRequest-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Requests-createRequest-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Requests-createRequest-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Requests-createRequest-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Requests-createRequest-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Requests-createRequest-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Requests-createRequest-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Requests-createRequest-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Requests-createRequest-0-rust">Rust</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Requests-sendRequest-0-curl">
+                          <div class="tab-pane active" id="examples-Requests-createRequest-0-curl">
                             <pre class="prettyprint"><code class="language-bsh">curl -X POST\
  -H "Accept: application/json"\
  -H "Content-Type: application/json"\
  "http://localhost:8080/requests"</code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-Requests-sendRequest-0-java">
+                          <div class="tab-pane" id="examples-Requests-createRequest-0-java">
                             <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
 import org.openapitools.client.auth.*;
 import org.openapitools.client.model.*;
@@ -978,10 +1065,10 @@ public class RequestsApiExample {
         SearchRequest searchRequest = ; // SearchRequest | 
         
         try {
-            SearchResult result = apiInstance.sendRequest(searchRequest);
+            SuccessOutput result = apiInstance.createRequest(searchRequest);
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling RequestsApi#sendRequest");
+            System.err.println("Exception when calling RequestsApi#createRequest");
             e.printStackTrace();
         }
     }
@@ -989,7 +1076,7 @@ public class RequestsApiExample {
 </code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-Requests-sendRequest-0-android">
+                          <div class="tab-pane" id="examples-Requests-createRequest-0-android">
                             <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.RequestsApi;
 
 public class RequestsApiExample {
@@ -998,28 +1085,28 @@ public class RequestsApiExample {
         SearchRequest searchRequest = ; // SearchRequest | 
         
         try {
-            SearchResult result = apiInstance.sendRequest(searchRequest);
+            SuccessOutput result = apiInstance.createRequest(searchRequest);
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling RequestsApi#sendRequest");
+            System.err.println("Exception when calling RequestsApi#createRequest");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-Requests-sendRequest-0-groovy">
+  <div class="tab-pane" id="examples-Requests-createRequest-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-Requests-sendRequest-0-objc">
+                            <div class="tab-pane" id="examples-Requests-createRequest-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">
 
 // Create an instance of the API class
 RequestsApi *apiInstance = [[RequestsApi alloc] init];
 SearchRequest *searchRequest = ; //  (optional)
 
-[apiInstance sendRequestWith:searchRequest
-              completionHandler: ^(SearchResult output, NSError* error) {
+[apiInstance createRequestWith:searchRequest
+              completionHandler: ^(SuccessOutput output, NSError* error) {
     if (output) {
         NSLog(@"%@", output);
     }
@@ -1030,7 +1117,7 @@ SearchRequest *searchRequest = ; //  (optional)
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Requests-sendRequest-0-javascript">
+                            <div class="tab-pane" id="examples-Requests-createRequest-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var FlightSearchApi = require('flight_search_api');
 
 // Create an instance of the API class
@@ -1046,14 +1133,14 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.sendRequest(opts, callback);
+api.createRequest(opts, callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-Requests-sendRequest-0-angular">
+                            <!--<div class="tab-pane" id="examples-Requests-createRequest-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-Requests-sendRequest-0-csharp">
+                            <div class="tab-pane" id="examples-Requests-createRequest-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using Org.OpenAPITools.Api;
@@ -1062,7 +1149,7 @@ using Org.OpenAPITools.Model;
 
 namespace Example
 {
-    public class sendRequestExample
+    public class createRequestExample
     {
         public void main()
         {
@@ -1072,10 +1159,10 @@ namespace Example
             var searchRequest = new SearchRequest(); // SearchRequest |  (optional) 
 
             try {
-                SearchResult result = apiInstance.sendRequest(searchRequest);
+                SuccessOutput result = apiInstance.createRequest(searchRequest);
                 Debug.WriteLine(result);
             } catch (Exception e) {
-                Debug.Print("Exception when calling RequestsApi.sendRequest: " + e.Message );
+                Debug.Print("Exception when calling RequestsApi.createRequest: " + e.Message );
             }
         }
     }
@@ -1083,7 +1170,7 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Requests-sendRequest-0-php">
+                            <div class="tab-pane" id="examples-Requests-createRequest-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
@@ -1092,15 +1179,15 @@ $api_instance = new OpenAPITools\Client\Api\RequestsApi();
 $searchRequest = ; // SearchRequest | 
 
 try {
-    $result = $api_instance->sendRequest($searchRequest);
+    $result = $api_instance->createRequest($searchRequest);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling RequestsApi->sendRequest: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling RequestsApi->createRequest: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Requests-sendRequest-0-perl">
+                            <div class="tab-pane" id="examples-Requests-createRequest-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::RequestsApi;
@@ -1110,15 +1197,15 @@ my $api_instance = WWW::OPenAPIClient::RequestsApi->new();
 my $searchRequest = WWW::OPenAPIClient::Object::SearchRequest->new(); # SearchRequest | 
 
 eval { 
-    my $result = $api_instance->sendRequest(searchRequest => $searchRequest);
+    my $result = $api_instance->createRequest(searchRequest => $searchRequest);
     print Dumper($result);
 };
 if ($@) {
-    warn "Exception when calling RequestsApi->sendRequest: $@\n";
+    warn "Exception when calling RequestsApi->createRequest: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Requests-sendRequest-0-python">
+                            <div class="tab-pane" id="examples-Requests-createRequest-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import openapi_client
@@ -1130,20 +1217,20 @@ api_instance = openapi_client.RequestsApi()
 searchRequest =  # SearchRequest |  (optional)
 
 try: 
-    api_response = api_instance.send_request(searchRequest=searchRequest)
+    api_response = api_instance.create_request(searchRequest=searchRequest)
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling RequestsApi->sendRequest: %s\n" % e)</code></pre>
+    print("Exception when calling RequestsApi->createRequest: %s\n" % e)</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Requests-sendRequest-0-rust">
+                            <div class="tab-pane" id="examples-Requests-createRequest-0-rust">
                               <pre class="prettyprint"><code class="language-rust">extern crate RequestsApi;
 
 pub fn main() {
     let searchRequest = ; // SearchRequest
 
     let mut context = RequestsApi::Context::default();
-    let result = client.sendRequest(searchRequest, &context).wait();
+    let result = client.createRequest(searchRequest, &context).wait();
 
     println!("{:?}", result);
 }
@@ -1195,12 +1282,12 @@ $(document).ready(function() {
   }
 
   var view = new JSONSchemaView(schema,2,{isBodyParam: true});
-  var result = $('#d2e199_sendRequest_searchRequest');
+  var result = $('#d2e199_createRequest_searchRequest');
   result.empty();
   result.append(view.render());
 });
 </script>
-<div id="d2e199_sendRequest_searchRequest"></div>
+<div id="d2e199_createRequest_searchRequest"></div>
 </td>
 </tr>
 
@@ -1209,23 +1296,23 @@ $(document).ready(function() {
 
 
                           <h2>Responses</h2>
-                            <h3 id="examples-Requests-sendRequest-title-200"></h3>
-                            <p id="examples-Requests-sendRequest-description-200" class="marked"></p>
+                            <h3 id="examples-Requests-createRequest-title-200"></h3>
+                            <p id="examples-Requests-createRequest-description-200" class="marked"></p>
                             <script>
                               var responseRequests200_description = `OK`;
                               var responseRequests200_description_break = responseRequests200_description.indexOf('\n');
                               if (responseRequests200_description_break == -1) {
-                                $("#examples-Requests-sendRequest-title-200").text("Status: 200 - " + responseRequests200_description);
+                                $("#examples-Requests-createRequest-title-200").text("Status: 200 - " + responseRequests200_description);
                               } else {
-                                $("#examples-Requests-sendRequest-title-200").text("Status: 200 - " + responseRequests200_description.substring(0, responseRequests200_description_break));
-                                $("#examples-Requests-sendRequest-description-200").html(responseRequests200_description.substring(responseRequests200_description_break));
+                                $("#examples-Requests-createRequest-title-200").text("Status: 200 - " + responseRequests200_description.substring(0, responseRequests200_description_break));
+                                $("#examples-Requests-createRequest-description-200").html(responseRequests200_description.substring(responseRequests200_description_break));
                               }
                             </script>
 
 
-                            <ul id="responses-detail-Requests-sendRequest-200" class="nav nav-tabs nav-tabs-examples" >
+                            <ul id="responses-detail-Requests-createRequest-200" class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
-                                  <a data-toggle="tab" href="#responses-Requests-sendRequest-200-schema">Schema</a>
+                                  <a data-toggle="tab" href="#responses-Requests-createRequest-200-schema">Schema</a>
                                 </li>
 
 
@@ -1234,9 +1321,9 @@ $(document).ready(function() {
                             </ul>
 
 
-                            <div class="tab-content" id="responses-Requests-sendRequest-200-wrapper" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-Requests-sendRequest-200-schema">
-                                  <div id="responses-Requests-sendRequest-schema-200" class="exampleStyle">
+                            <div class="tab-content" id="responses-Requests-createRequest-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Requests-createRequest-200-schema">
+                                  <div id="responses-Requests-createRequest-schema-200" class="exampleStyle">
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = {
@@ -1244,7 +1331,7 @@ $(document).ready(function() {
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/SearchResult"
+        "$ref" : "#/components/schemas/SuccessOutput"
       }
     }
   }
@@ -1265,14 +1352,80 @@ $(document).ready(function() {
                                         }
 
                                         var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-Requests-sendRequest-200-schema-data').val(JSON.stringify(schema));
-                                        var result = $('#responses-Requests-sendRequest-schema-200');
+                                        $('#responses-Requests-createRequest-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Requests-createRequest-schema-200');
                                         result.empty();
                                         result.append(view.render());
                                       });
                                     </script>
                                   </div>
-                                  <input id='responses-Requests-sendRequest-200-schema-data' type='hidden' value=''></input>
+                                  <input id='responses-Requests-createRequest-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+                            <h3 id="examples-Requests-createRequest-title-400"></h3>
+                            <p id="examples-Requests-createRequest-description-400" class="marked"></p>
+                            <script>
+                              var responseRequests400_description = `Bad Request`;
+                              var responseRequests400_description_break = responseRequests400_description.indexOf('\n');
+                              if (responseRequests400_description_break == -1) {
+                                $("#examples-Requests-createRequest-title-400").text("Status: 400 - " + responseRequests400_description);
+                              } else {
+                                $("#examples-Requests-createRequest-title-400").text("Status: 400 - " + responseRequests400_description.substring(0, responseRequests400_description_break));
+                                $("#examples-Requests-createRequest-description-400").html(responseRequests400_description.substring(responseRequests400_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Requests-createRequest-400" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-Requests-createRequest-400-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Requests-createRequest-400-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Requests-createRequest-400-schema">
+                                  <div id="responses-Requests-createRequest-schema-400" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = {
+  "description" : "Bad Request",
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/FailedOutput"
+      }
+    }
+  }
+};
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-Requests-createRequest-400-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Requests-createRequest-schema-400');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-Requests-createRequest-400-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
                         </article>

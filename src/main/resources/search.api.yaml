@@ -13,10 +13,10 @@ tags:
 paths:
   /requests:
     post:
-      operationId: sendRequest
+      operationId: createRequest
       tags:
         - requests
-      description: send search request for flights
+      description: TODO
       requestBody:
         content:
           application/json:
@@ -28,7 +28,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SearchResult"
+                $ref: "#/components/schemas/SuccessOutput"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FailedOutput"
+
   /results:
     post:
       operationId: pollResult
@@ -47,21 +54,112 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PollResult"
+
 components:
   schemas:
+    # main schemas
     SearchRequest:
+      description: TODO
+      required:
+        - queries
+        - adultAmount
       properties:
-        whatever:
-          type: string
-    SearchResult:
-      properties:
-        whatever:
-          type: string
+        queries:
+          description: This is a list containing the same number of queries as the number of flights for the trip. For one-way trip there should be one query, whereas for round trip there should be two queries.
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/Query"
+        type:
+            $ref: "#/components/schemas/TripType"
+        adultAmount:
+          description: This is the number of adult passengers
+          type: integer
+          minimum: 1
+        childAmount:
+          description: This is the number of child passengers
+          type: integer
+          minimum: 0
+        infantAmount:
+          description: This is the number of infant passengers
+          type: integer
+          minimum: 0
+        fareClass:
+          $ref: "#/components/schemas/FareClass"
+
     PollRequest:
+      description: TODO
       properties:
         whatever:
           type: string
+
     PollResult:
+      description: TODO
       properties:
         whatever:
           type: string
+
+    SuccessOutput:
+      description: TODO
+      properties:
+        resultCode:
+          type: integer
+          default: 200
+        requestId:
+          type: string
+          example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+
+    FailedOutput:
+      description: TODO
+      properties:
+        resultCode:
+          type: integer
+          default: 400
+        message:
+          type: string
+          example: "Broken search request"
+
+    # sub schemas
+    Query:
+      description: This is a flight query from departure airport to arrival airport on specific departure date. This query corresponding to a single flight in a trip, where a one-way trip contains only one flight and a round trip contains two flights.
+      required:
+        - depAirport
+        - arrAirport
+        - date
+      properties:
+        depAirport:
+          description: This is the departure airport specified using its IATA code.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: LON
+        arrAirport:
+          description: This is the arrival airport specified using its IATA code.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: CGN
+        date:
+          description: This is the departure date in 'YYYYMMDD' format
+          type: string
+          pattern: '^\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$'
+          example: "20210401"
+
+    # enums
+    FareClass:
+      description: This is the fare class, which is one of `Economy`, `PremiumEconomy`, `Business`, `First` and `All`, where `All` means query for all fare classes.
+      type: string
+      default: Economy
+      enum:
+        - Economy
+        - PremiumEconomy
+        - Business
+        - First
+        - All
+    TripType:
+      description: This is the trip type, where `OW` is for one-way trip and `RT` is for round trip.
+      type: string
+      default: OW
+      enum:
+        - OW
+        - RT

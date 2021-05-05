@@ -4,16 +4,16 @@ All URIs are relative to *http://localhost:8080*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**sendRequest**](RequestsApi.md#sendRequest) | **POST** /requests | 
+[**createRequest**](RequestsApi.md#createRequest) | **POST** /requests | 
 
 
-<a name="sendRequest"></a>
-# **sendRequest**
-> SearchResult sendRequest(SearchRequest)
+<a name="createRequest"></a>
+# **createRequest**
+> SuccessOutput createRequest(SearchRequest)
 
 
 
-    send search request for flights
+    TODO
 
 ### Parameters
 
@@ -23,7 +23,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**SearchResult**](../Models/SearchResult.md)
+[**SuccessOutput**](../Models/SuccessOutput.md)
 
 ### Authorization
 

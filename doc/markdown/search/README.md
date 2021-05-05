@@ -7,17 +7,21 @@ All URIs are relative to *http://localhost:8080*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*RequestsApi* | [**sendRequest**](Apis/RequestsApi.md#sendrequest) | **POST** /requests | send search request for flights
+*RequestsApi* | [**createRequest**](Apis/RequestsApi.md#createrequest) | **POST** /requests | TODO
 *ResultsApi* | [**pollResult**](Apis/ResultsApi.md#pollresult) | **POST** /results | poll search results for flights
 
 
 <a name="documentation-for-models"></a>
 ## Documentation for Models
 
+ - [FailedOutput](./Models/FailedOutput.md)
+ - [FareClass](./Models/FareClass.md)
  - [PollRequest](./Models/PollRequest.md)
  - [PollResult](./Models/PollResult.md)
+ - [Query](./Models/Query.md)
  - [SearchRequest](./Models/SearchRequest.md)
- - [SearchResult](./Models/SearchResult.md)
+ - [SuccessOutput](./Models/SuccessOutput.md)
+ - [TripType](./Models/TripType.md)
 
 
 <a name="documentation-for-authorization"></a>

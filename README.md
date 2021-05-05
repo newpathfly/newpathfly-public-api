@@ -9,3 +9,11 @@ This repository holds both [OpenAPI specification](/src/main/resources) of `newp
 - Data API
 
 - Order API
+
+## Important
+
+Generating HTML files and Markdown files under `/doc` folder will not remove any file generated previously.
+
+> For example, if a schema `LegacyAirline` is removed from a OpenAPI yaml file, the corresponding `LegacyAirline.md` markdown file previously generated will never be removed.
+
+Because files are only added, not removed, it is **important** to remove `/doc` folder and generate the documentation files from scratch before checking into the Git repo.
