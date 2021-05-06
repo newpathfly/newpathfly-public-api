@@ -11,3 +11,4 @@ This repository holds both [OpenAPI specification](/src/main/resources) of `newp
 Run `mvn clean compile` to build.
 
 > Interfaces and model classes will be automatically generated from the specification files using [openapi-generator-maven-plugin](https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-maven-plugin).
+
