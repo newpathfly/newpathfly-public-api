@@ -2,22 +2,25 @@ openapi: 3.0.3
 info:
   title: Flight Search API
   version: 2.1.0
-  description: This API is intended for backend integration only. It is not designed for calling from a frontend directly.
+  description:
+    The Flight Search API enables travel businesses with virtual interlining offering of cheapest flights.
+    Our virtual interlining technology not only gives your more content in addition to GDS, it also gives contents with more competitive pricing.<br><br>
+    <i>This API is intended for backend integration only. It is not designed for calling from a frontend directly.</i>
   contact:
     name: newpathfly
 servers:
-  - url: http://localhost:8080
+  - url: http://uat-api.newpathfly.com/v1/search
+  - url: http://api.newpathfly.com/v1/search
 tags:
-  - name: Search
-  - name: Poll
+  - name: Shopping
 paths:
   /searches:
     post:
       summary: Call this endpoint to create a search request.
-      description: TODO
+      description: A `requestId` will be returned given a valid search request. This `requestId` is required for polling for search results later on.
       operationId: createSearch
       tags:
-        - Search
+        - Shopping
       requestBody:
         content:
           application/json:
@@ -39,10 +42,11 @@ paths:
 
   /polls:
     post:
+      summary: Call this endpoint to poll for search results.
+      description: A `requestId` is needed for polling for search results corresponding to its search request.
       operationId: createPoll
       tags:
-        - Poll
-      description: Call this endpoint to poll for search results.
+        - Shopping
       requestBody:
         content:
           application/json:
@@ -60,7 +64,7 @@ components:
   schemas:
     # Search Request
     SearchRequest:
-      description: TODO
+      description: This is the payload to be sent when calling `/searches` endpoint.
       required:
         - queries
         - adultAmount
@@ -89,31 +93,32 @@ components:
           $ref: "#/components/schemas/FareClass"
 
     SearchRequestSuccessful:
-      description: TODO
+      description: This is the response when a `SearchRequest` is accepted.
       properties:
         resultCode:
+          description: The result code is always `200` for accepted request.
           type: integer
           default: 200
         requestId:
-          description: This is the request ID to be included in polling later on.
+          description: This value should be included in the polling later on.
           type: string
           example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
 
     SearchRequestFailed:
-      description: TODO
+      description: This is the response when a `SearchRequest` is rejected.
       properties:
         resultCode:
-          description: TODO
+          description: This value is always `400` for rejected request.
           type: integer
           default: 400
         message:
-          description: TODO
+          description: This message contains the reason for rejected request.
           type: string
-          example: "Broken search request"
+          example: invalid search request
 
     # Poll
     SearchResultPoll:
-      description: TODO
+      description: This is the payload to be sent when calling `/polls` endpoint. The virtual interlining engine will mostly likely keep generating results at the backend, so stop calling this endpoint when number of results is good enough as a general practice.
       required:
         - requestId
       properties:
@@ -122,25 +127,26 @@ components:
           type: string
           example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
         offset:
-          description: TODO
+          description: This is the offset of the results to be polled next.
           type: integer
           minimum: 0
-          example: 100
+          default: 100
         size:
-          description: TODO
+          description: This is the maximum number of results to be polled. The actual number of results might be less when there is no more results available at the moment.
+          type: integer
           minimum: 1
           maximum: 100
-          example: 10
+          default: 10
 
     SearchResult:
-      description: TODO
+      description: This result contains up to the number of flight trips specified by `size` in the request.
       properties:
         resultCode:
-          description: TODO
+          description: The result code is `200` for a successful poll and it is `400` otherwise.
           type: integer
           example: 200
         message:
-          description: TODO
+          description: This message contains the reason for a failed poll.
           type: string
           example: Any error message goes here.
         currencyCode:
@@ -191,7 +197,7 @@ components:
           items:
             $ref: "#/components/schemas/Flight"
         prices:
-          description: TODO
+          description: This is a map between each price type and the actual pricing information. `ADT`, `CHD` and `INF` correspond to each individual passenger type. `ALL` corresponds to all passengers. The total price in `ALL` should equal to `ADT` * `adultAmount` + `CHD` * `childAmount` + `INF` * `infantAmount`.
           properties:
             ADT:
               $ref: "#/components/schemas/Price"
@@ -203,17 +209,17 @@ components:
               $ref: "#/components/schemas/Price"
 
     Flight:
-      description: TODO
+      description: A flight is a pair of original departure to final destination.
       properties:
         segments:
-          description: TODO
+          description: A flight consists of one or more segments. For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
           type: array
           minItems: 1
           items:
             $ref: "#/components/schemas/Segment"
 
     Segment:
-      description: TODO
+      description: A segment is a pair of departure and arrival without any stop in-between.
       properties:
         fareClass:
           $ref: "#/components/schemas/FareClass"
@@ -261,22 +267,22 @@ components:
           example: AC
 
     Price:
-      description: TODO
+      description: This is the pricing information including `price`, `tax` and `totalPrice`.
       properties:
         price:
-          description: TODO
+          description: This it the before tax price.
           type: number
           format: double
           minimum: 0
           example: 123.45
         tax:
-          description: TODO
+          description: This it the tax.
           type: number
           format: double
           minimum: 0
           example: 6.78
         totalPrice:
-          description: TODO
+          description: This it the total price including tax.
           type: number
           format: double
           minimum: 0

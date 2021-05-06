@@ -5,7 +5,8 @@
 
     <groupId>com.newpathfly</groupId>
     <artifactId>public-api</artifactId>
-    <version>0.1.0</version>
+    <version>2.1.0</version>
+
 
     <name>public-api</name>
     <description>newpathfly public API</description>
@@ -53,6 +54,14 @@
             <version>4.0.1</version>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>superone-releases</id>
+            <name>superone-releases</name>
+            <url>https://newpathfly-564558571405.d.codeartifact.ap-southeast-1.amazonaws.com/maven/superone-releases/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
 
