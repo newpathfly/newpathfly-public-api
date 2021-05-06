@@ -15,12 +15,17 @@ Class | Method | HTTP request | Description
 ## Documentation for Models
 
  - [FareClass](./Models/FareClass.md)
+ - [Flight](./Models/Flight.md)
+ - [Price](./Models/Price.md)
  - [Query](./Models/Query.md)
  - [SearchRequest](./Models/SearchRequest.md)
  - [SearchRequestFailed](./Models/SearchRequestFailed.md)
  - [SearchRequestSuccessful](./Models/SearchRequestSuccessful.md)
  - [SearchResult](./Models/SearchResult.md)
  - [SearchResultPoll](./Models/SearchResultPoll.md)
+ - [SeatStatus](./Models/SeatStatus.md)
+ - [Segment](./Models/Segment.md)
+ - [Trip](./Models/Trip.md)
  - [TripType](./Models/TripType.md)
 
 

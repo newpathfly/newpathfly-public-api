@@ -849,8 +849,57 @@ ul.nav-tabs {
     defs["FareClass"] = {
   "type" : "string",
   "description" : "This is the fare class, which is one of `Economy`, `PremiumEconomy`, `Business`, `First` and `All`, where `All` means query for all fare classes.",
-  "default" : "Economy",
-  "enum" : [ "Economy", "PremiumEconomy", "Business", "First", "All" ]
+  "enum" : [ "Economy", "PremiumEconomy", "Business", "First", "All" ],
+  "default" : "Economy"
+};
+    defs["Flight"] = {
+  "properties" : {
+    "segments" : {
+      "minItems" : 1,
+      "type" : "array",
+      "description" : "TODO",
+      "items" : {
+        "$ref" : "#/components/schemas/Segment"
+      }
+    }
+  },
+  "description" : "TODO"
+};
+    defs["Price"] = {
+  "properties" : {
+    "price" : {
+      "minimum" : 0,
+      "type" : "number",
+      "description" : "TODO",
+      "format" : "double",
+      "example" : 123.45
+    },
+    "tax" : {
+      "minimum" : 0,
+      "type" : "number",
+      "description" : "TODO",
+      "format" : "double",
+      "example" : 6.78
+    },
+    "totalPrice" : {
+      "minimum" : 0,
+      "type" : "number",
+      "description" : "TODO",
+      "format" : "double",
+      "example" : 130.23
+    },
+    "seatsStatus" : {
+      "$ref" : "#/components/schemas/SeatStatus"
+    },
+    "currencyCode" : {
+      "maxLength" : 3,
+      "minLength" : 3,
+      "type" : "string",
+      "description" : "This is the 3-letter currency code in which price is provided.",
+      "example" : "EUR"
+    }
+  },
+  "description" : "TODO"
 };
     defs["Query"] = {
   "required" : [ "arrAirport", "date", "depAirport" ],
@@ -872,7 +921,7 @@ ul.nav-tabs {
     "date" : {
       "pattern" : "^\\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$",
       "type" : "string",
-      "description" : "This is the departure date in 'YYYYMMDD' format",
+      "description" : "This is the departure date in `YYYYMMDD` format",
       "example" : "20210401"
     }
   },
@@ -954,10 +1003,19 @@ ul.nav-tabs {
       "description" : "TODO",
       "example" : "Any error message goes here."
     },
-    "currency" : {
+    "currencyCode" : {
+      "maxLength" : 3,
+      "minLength" : 3,
       "type" : "string",
       "description" : "This is the 3-letter currency code in which price is provided.",
       "example" : "EUR"
+    },
+    "trips" : {
+      "type" : "array",
+      "description" : "This is a list of trips based on `queries` and `TripType` in the corresponding `SearchRequest`.",
+      "items" : {
+        "$ref" : "#/components/schemas/Trip"
+      }
     }
   },
   "description" : "TODO"
@@ -969,15 +1027,121 @@ ul.nav-tabs {
       "type" : "string",
       "description" : "This is the request ID for which to be polled.",
       "example" : "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+    },
+    "offset" : {
+      "minimum" : 0,
+      "type" : "integer",
+      "description" : "TODO",
+      "example" : 100
+    },
+    "size" : {
+      "maximum" : 100,
+      "minimum" : 1,
+      "description" : "TODO",
+      "example" : 10
     }
   },
   "description" : "TODO"
 };
+    defs["SeatStatus"] = {
+  "type" : "string",
+  "description" : "Seat status is `EMPTY` when there is no seat. Else, it is `LIMITED` when there are less than 8 seats. Else, it is `ENOUGH`.",
+  "example" : "ENOUGH",
+  "enum" : [ "EMPTY", "ENOUGH", "LIMITED" ]
+};
+    defs["Segment"] = {
+  "properties" : {
+    "fareClass" : {
+      "$ref" : "#/components/schemas/FareClass"
+    },
+    "depDate" : {
+      "pattern" : "^\\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$",
+      "type" : "string",
+      "description" : "This is the departure date in `YYYYMMDD` format.",
+      "example" : "20210401"
+    },
+    "depTime" : {
+      "pattern" : "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$",
+      "type" : "string",
+      "description" : "This is the departure time in `HH:mm` format.",
+      "example" : "12:45"
+    },
+    "depAirport" : {
+      "maxLength" : 3,
+      "minLength" : 3,
+      "type" : "string",
+      "description" : "This is the departure airport specified using its IATA code.",
+      "example" : "LON"
+    },
+    "arrDate" : {
+      "pattern" : "^\\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$",
+      "type" : "string",
+      "description" : "This is the arrival date in `YYYYMMDD` format.",
+      "example" : "20210401"
+    },
+    "arrTime" : {
+      "pattern" : "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$",
+      "type" : "string",
+      "description" : "This is the arrival time in `HH:mm` format.",
+      "example" : "17:50"
+    },
+    "arrAirport" : {
+      "maxLength" : 3,
+      "minLength" : 3,
+      "type" : "string",
+      "description" : "This is the arrival airport specified using its IATA code.",
+      "example" : "CGN"
+    },
+    "flightNo" : {
+      "type" : "string",
+      "description" : "This is the flight number starting with carrier IATA code.",
+      "example" : "AC103"
+    },
+    "carrier" : {
+      "maxLength" : 2,
+      "minLength" : 2,
+      "type" : "string",
+      "description" : "This is the 2-letter IATA carrier code",
+      "example" : "AC"
+    }
+  },
+  "description" : "TODO"
+};
+    defs["Trip"] = {
+  "properties" : {
+    "flights" : {
+      "minItems" : 1,
+      "type" : "array",
+      "description" : "A one-way trip consists of one flight. A round-trip consists of two flights going forth and back between two places.",
+      "items" : {
+        "$ref" : "#/components/schemas/Flight"
+      }
+    },
+    "prices" : {
+      "properties" : {
+        "ADT" : {
+          "$ref" : "#/components/schemas/Price"
+        },
+        "CHD" : {
+          "$ref" : "#/components/schemas/Price"
+        },
+        "INF" : {
+          "$ref" : "#/components/schemas/Price"
+        },
+        "ALL" : {
+          "$ref" : "#/components/schemas/Price"
+        }
+      },
+      "description" : "TODO"
+    }
+  },
+  "description" : "A trip is one complete travel. It can be one-way trip or a round trip, depending on the number of included flights."
+};
     defs["TripType"] = {
   "type" : "string",
   "description" : "This is the trip type, where `OW` is for one-way trip and `RT` is for round trip.",
-  "default" : "OW",
-  "enum" : [ "OW", "RT" ]
+  "enum" : [ "OW", "RT" ],
+  "default" : "OW"
 };
 
     var errs = {};
