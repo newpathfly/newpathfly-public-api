@@ -2,10 +2,15 @@ openapi: 3.0.3
 info:
   title: Flight Search API
   version: 2.1.0
-  description:
-    The Flight Search API enables travel businesses with virtual interlining offering of cheapest flights.
-    Our virtual interlining technology not only gives your more content in addition to GDS, it also gives contents with more competitive pricing.<br><br>
-    <i>This API is intended for backend integration only. It is not designed for calling from a frontend directly.</i>
+  description: |
+    # Introduction
+
+    The Flight Search API enables travel businesses with virtual interlining offering of cheapest flights. Our virtual interlining technology not only gives your more content in addition to GDS, it also gives contents with more competitive pricing.<br><br>
+    
+    # OpenAPI Specification
+
+    This API specification can be downloaded in [OpenAPI](https://openapis.org) format. Many [code generator tools](https://openapi-generator.tech/docs/generators) are available to generate client code in different programming languages based on the specification file.
+
   contact:
     name: newpathfly
 servers:
@@ -16,7 +21,7 @@ tags:
 paths:
   /searches:
     post:
-      summary: Call this endpoint to create a search request.
+      summary: Create a search request
       description: A `requestId` will be returned given a valid search request. This `requestId` is required for polling for search results later on.
       operationId: createSearch
       tags:
@@ -42,7 +47,7 @@ paths:
 
   /polls:
     post:
-      summary: Call this endpoint to poll for search results.
+      summary: Poll for search results
       description: A `requestId` is needed for polling for search results corresponding to its search request.
       operationId: createPoll
       tags:
