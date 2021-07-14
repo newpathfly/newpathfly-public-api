@@ -1,0 +1,37 @@
+openapi: 3.0.3
+info:
+  title: Flight Order API
+  version: 2.1.0
+  description: |
+    (TODO)
+  contact:
+    name: newpathfly
+servers:
+  - url: http://uat-api.newpathfly.com/v1/order
+  - url: http://api.newpathfly.com/v1/order
+tags:
+  - name: Order
+paths:
+  /orders:
+    post:
+      description: |
+        (TODO)
+      operationId: createOrder
+      tags:
+        - Order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    Order:
+      description: |
+        (TODO)
+
+      
+    
