@@ -32,6 +32,76 @@ components:
     Order:
       description: |
         (TODO)
-
-      
-    
+      properties:
+        payment:
+          properties:
+            currency:
+              type: string
+              example: EUR
+            totalAmount:
+              type: number
+              example: 456.78
+        customer:
+          $ref: "#/components/schemas/Customer"
+        passengers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Passenger"
+    Customer:
+      allOf:
+        - $ref: "#/components/schemas/Person"
+    Passenger:
+      allOf:
+        - $ref: "#/components/schemas/Person"
+        - properties:
+            type:
+              type: string
+              enum:
+                - ADT
+                - CHD
+                - INF
+            birthday:
+              type: string
+              format: date
+              example: "2001-01-01"
+            gender:
+              type: string
+              enum:
+                - M
+                - F
+            travelDocument:
+              $ref: "#/components/schemas/TravelDocument"
+    Person:
+      description: |
+        (TODO)
+      properties:
+        firstName:
+          type: string
+          example: Peter
+        lastName:
+          type: string
+          example: Parker
+    TravelDocument:
+      description: |
+        (TODO)
+      properties:
+        type:
+          description: |
+            (TODO)
+          type: string
+          default: PASSPORT
+          enum:
+            - DRIVER_LICENSE
+            - NATIONAL_ID
+            - PASSPORT
+        number:
+          type: string
+          description: |
+            (TODO)
+          example: EG12345678
+        expiryDate:
+          type: string
+          format: date
+        placeOfIssue:
+          type: string
+          example: USA

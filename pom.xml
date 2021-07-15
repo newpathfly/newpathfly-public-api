@@ -102,6 +102,24 @@
                             </configOptions>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>2</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/order.api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.newpathfly.order.api</apiPackage>
+                            <modelPackage>com.newpathfly.order.model</modelPackage>
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                                <interfaceOnly>true</interfaceOnly>
+                                <openApiNullable>false</openApiNullable>
+                                <serializableModel>true</serializableModel>
+                            </configOptions>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
