@@ -42,7 +42,7 @@ components:
               type: number
               example: 456.78
             method:
-              $ref: "#/components/schemas/PaymentMethod"
+              $ref: "#/components/schemas/CreditCard"
         customer:
           $ref: "#/components/schemas/Customer"
         passengers:
@@ -117,9 +117,38 @@ components:
         placeOfIssue:
           type: string
           example: USA
-    PaymentMethod:
+    CreditCard:
       properties:
         type:
           type: string
           enum:
             - MASTERCARD
+            - VISA
+        number:
+          type: string
+          example: "5250567933594297"
+        cvc:
+          type: string
+          example: "123"
+        expiryMonth:
+          type: string
+          example: "08"
+        expiryYear:
+          type: string
+          example: "24"
+        holder:
+          $ref: "#/components/schemas/Person"
+        address:
+          type: string
+          example: "738 Winter Garden Drive"
+        city:
+          type: string
+          example: New York
+        zipCode:
+          type: string
+          example: "11375"
+        countryCode:
+          type: string
+          example: US
+          description: |
+            2-letter ISO country code (alpha-2) as listed at https://en.wikipedia.org/wiki/ISO_3166-1
