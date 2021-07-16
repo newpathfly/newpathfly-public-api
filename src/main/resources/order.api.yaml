@@ -41,6 +41,8 @@ components:
             totalAmount:
               type: number
               example: 456.78
+            method:
+              $ref: "#/components/schemas/PaymentMethod"
         customer:
           $ref: "#/components/schemas/Customer"
         passengers:
@@ -50,6 +52,16 @@ components:
     Customer:
       allOf:
         - $ref: "#/components/schemas/Person"
+        - properties:
+            phoneCountryCode:
+              type: string
+              example: "+1"
+            phoneNumber:
+              type: string
+              example: "1234567890"
+            email:
+              type: string
+              example: "peter_parker@yahoo.com"
     Passenger:
       allOf:
         - $ref: "#/components/schemas/Person"
@@ -105,3 +117,9 @@ components:
         placeOfIssue:
           type: string
           example: USA
+    PaymentMethod:
+      properties:
+        type:
+          type: string
+          enum:
+            - MASTERCARD
