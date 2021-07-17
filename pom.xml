@@ -82,7 +82,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>5.1.0</version>
+                <version>5.2.0</version>
                 <executions>
                     <execution>
                         <id>1</id>
@@ -112,6 +112,24 @@
                             <generatorName>spring</generatorName>
                             <apiPackage>com.newpathfly.order.api</apiPackage>
                             <modelPackage>com.newpathfly.order.model</modelPackage>
+                            <configOptions>
+                                <dateLibrary>java8</dateLibrary>
+                                <interfaceOnly>true</interfaceOnly>
+                                <openApiNullable>false</openApiNullable>
+                                <serializableModel>true</serializableModel>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>3</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/payment.api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.newpathfly.payment.api</apiPackage>
+                            <modelPackage>com.newpathfly.payment.model</modelPackage>
                             <configOptions>
                                 <dateLibrary>java8</dateLibrary>
                                 <interfaceOnly>true</interfaceOnly>

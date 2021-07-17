@@ -195,6 +195,10 @@ components:
     Trip:
       description: A trip is one complete travel. It can be one-way trip or a round trip, depending on the number of included flights.
       properties:
+        tripKey:
+          description: (TODO)
+          type: string
+          example: (TODO)
         flights:
           description: A one-way trip consists of one flight. A round-trip consists of two flights going forth and back between two places.
           type: array
