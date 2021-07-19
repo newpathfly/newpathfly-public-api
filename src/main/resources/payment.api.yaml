@@ -31,7 +31,51 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Payment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /payments/{paymentId}:
+    get:
+      description: |
+        (TODO)
+      operationId: getPayment
+      tags:
+        - Payment
+      parameters:
+        - $ref: "#/components/parameters/PaymentId"
+      responses:
+        "200":
+          $ref: "#/components/responses/Payment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
 components:
+  parameters:
+    PaymentId:
+      name: paymentId
+      in: path
+      required: true
+      schema:
+        type: string
+        readOnly: true
+        description: |
+          (TODO)
+        example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
+
+  responses:
+    Payment:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Payment"
+
+    BadRequest:
+      description: Bad Request
+      content:
+        text/plain:
+          example: "Bad order request: (specific error message here)"
+
   schemas:
     Payment:
       required:
