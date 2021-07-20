@@ -33,11 +33,11 @@ tags:
     description: |
       Search for virtual interlining offerings of cheapest flights.
 
-  - name: Order
+  - name: Orders
     description: |
       Place orders of virtually interlined flights.
 
-  - name: Payment
+  - name: Payments
     description: |
       Make payments to orders of virtually interlined flights.
 
@@ -97,14 +97,37 @@ tags:
       <SchemaDefinition schemaRef="#/components/schemas/Price" />
 
   # Order Schemas
-  
+  - name: Order
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Order" />
+
+  - name: Customer
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Customer" />
+
+  - name: Passenger
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Passenger" />
+
+  - name: TravelDocument
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/TravelDocument" />
+
+  # Payment Schemas
+  - name: Payment
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Payment" />
+
+  - name: CreditCard
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/CreditCard" />
 
 x-tagGroups:
   - name: API
     tags:
       - Shopping
-      - Order
-      - Payment
+      - Orders
+      - Payments
 
   - name: Enums
     tags:
@@ -127,6 +150,18 @@ x-tagGroups:
       - Query
       - Trip
       - Price
+
+  - name: Order Schemas
+    tags:
+      - Order
+      - Customer
+      - Passenger
+      - TravelDocument
+
+  - name: Payment Schemas
+    tags:
+      - Payment
+      - CreditCard
 
 paths:
   # Shopping
@@ -183,7 +218,7 @@ paths:
         (TODO)
       operationId: createOrder
       tags:
-        - Order
+        - Orders
       requestBody:
         content:
           application/json:
@@ -201,7 +236,7 @@ paths:
         (TODO)
       operationId: getOrder
       tags:
-        - Order
+        - Orders
       parameters:
         - $ref: "#/components/parameters/OrderId"
       responses:
@@ -215,7 +250,7 @@ paths:
         (TODO)
       operationId: createPayment
       tags:
-        - Payment
+        - Payments
       requestBody:
         content:
           application/json:
@@ -237,7 +272,7 @@ paths:
         (TODO)
       operationId: getPayment
       tags:
-        - Payment
+        - Payments
       parameters:
         - $ref: "#/components/parameters/PaymentId"
       responses:
