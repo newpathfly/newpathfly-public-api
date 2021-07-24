@@ -214,8 +214,11 @@ paths:
   # Order
   /orders:
     post:
+      summary: Create an order of specific flight
       description: |
-        (TODO)
+        Given information of specific `flights`, `customer` and `passengers`, an `orderId` will be returned along with `totalAmount` in particular `currency`.
+
+        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular order for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when an order is returned it is convenient to identify the corresponding order at client side.
       operationId: createOrder
       tags:
         - Orders
@@ -233,7 +236,7 @@ paths:
   /orders/{orderId}:
     get:
       description: |
-        (TODO)
+        An order with specified `orderId` will be returned.
       operationId: getOrder
       tags:
         - Orders
@@ -247,7 +250,7 @@ paths:
   /payments:
     post:
       description: |
-        (TODO)
+        Given the `orderId`, `totalAmount` in specific `currency` along with `creditCard` information, 
       operationId: createPayment
       tags:
         - Payments
@@ -616,7 +619,8 @@ components:
           readOnly: true
           example: 456.78
         flights:
-          description: A one-way trip consists of one flight. A round-trip consists of two flights going forth and back between two places.
+          description: |
+            A one-way trip consists of one flight. A round-trip consists of two flights going forth and back between two places.
           type: array
           minItems: 1
           items:
@@ -628,7 +632,20 @@ components:
           minItems: 1
           items:
             $ref: "#/components/schemas/Passenger"
-
+        extended:
+          description: |
+            Extended data from client side to associate with this particular order. This is useful for storing some information later needs to be retrieved, such as client side order ID. The data is in form of `key:value` pairs. All data will be returned upon getting a order.
+          type: object
+          additionalProperties:
+            type: string
+            description: |
+              a custom value associated with this order
+          example:
+            clientsideOrderId: O1234
+            clientsideCustomField1: A
+            clientsideCustomField2: B
+            clientsideCustomField3: C
+            
     Customer:
       allOf:
         - $ref: "#/components/schemas/Person"
