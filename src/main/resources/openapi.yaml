@@ -221,7 +221,7 @@ paths:
     post:
       summary: Create an order of specific flight
       description: |
-        Given information of specific `flights`, `customer` and `passengers`, an `orderId` will be returned along with `totalAmount` in particular `currency`.
+        Given information of specific `flights`, `customer` and `passengers`, an order with an unique `orderId` will be returned along with `totalAmount` in particular `currency`.
 
         An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular order for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when an order is returned it is convenient to identify the corresponding order at client side.
       operationId: createOrder
@@ -241,7 +241,9 @@ paths:
     get:
       summary: Retrieve one or more orders
       description: |
-        (TODO)
+        Given one or more criteria in the query string, one or more matching orders will be returned.
+
+        Results will also be paged based on `offset` and `size`.
       operationId: getOrders
       tags:
         - Orders
@@ -322,7 +324,7 @@ paths:
     post:
       summary: Make a payment to an order recently placed
       description: |
-        Given the `orderId`, `totalAmount` in specific `currency` along with `creditCard` information,
+        Given the `orderId`, `totalAmount` in specific `currency` along with `creditCard` information, a payment with an unique `paymentId` will be made and returned.
       operationId: createPayment
       tags:
         - Payments
@@ -340,6 +342,10 @@ paths:
                 $ref: "#/components/schemas/Payment"
         "400":
           $ref: "#/components/responses/BadRequest"
+        "402":
+          $ref: "#/components/responses/PaymentFailed"
+        "409":
+          $ref: "#/components/responses/PaymentConflict"
 
   /payments/{paymentId}:
     get:
@@ -450,6 +456,7 @@ components:
         default: 20
 
   responses:
+    # Order
     Order:
       description: OK
       content:
@@ -473,6 +480,7 @@ components:
           schema:
             $ref: "#/components/schemas/OrderStatus"
 
+    # Payment
     Payment:
       description: OK
       content:
@@ -480,6 +488,19 @@ components:
           schema:
             $ref: "#/components/schemas/Payment"
 
+    PaymentFailed:
+      description: Payment Required
+      content:
+        text/plain:
+          example: Payment to order {{orderId}} has failed.
+
+    PaymentConflict:
+      description: Conflict
+      content:
+        text/plain:
+          example: Order {{orderId}} is already paid.
+
+    # Common
     EmptyOK:
       description: OK
       content:
@@ -845,6 +866,10 @@ components:
             - completed
             - error
             - pending
+        paymentId:
+          readOnly: true
+          type: string
+          example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
         lastUpdated:
           readOnly: true
           type: string
@@ -932,10 +957,14 @@ components:
       properties:
         paymentId:
           readOnly: true
+          type: string
+          example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
+        createdAt:
+          readOnly: true
           description: |
             (TODO)
           type: string
-          example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
+          format: date-time
         orderId:
           type: string
           example: a7dd1cf6-dc96-490b-bdf6-8685dbf5bb87
@@ -949,6 +978,7 @@ components:
           $ref: "#/components/schemas/CreditCard"
 
     CreditCard:
+      writeOnly: true
       properties:
         type:
           type: string
