@@ -101,6 +101,10 @@ tags:
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Order" />
 
+  - name: OrderStatus
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/OrderStatus" />
+
   - name: Customer
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Customer" />
@@ -154,6 +158,7 @@ x-tagGroups:
   - name: Order Schemas
     tags:
       - Order
+      - OrderStatus
       - Customer
       - Passenger
       - TravelDocument
@@ -233,8 +238,31 @@ paths:
         "400":
           $ref: "#/components/responses/BadRequest"
 
+    get:
+      summary: Retrieve one or more orders
+      description: |
+        (TODO)
+      operationId: getOrders
+      tags:
+        - Orders
+      parameters:
+        - $ref: "#/components/parameters/CustomerPhoneNumber"
+        - $ref: "#/components/parameters/CustomerEmail"
+        - $ref: "#/components/parameters/PassengerTravelDocumentNumber"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Size"
+        - $ref: "#/components/parameters/DateTimeStart"
+        - $ref: "#/components/parameters/DateTimeEnd"
+        - $ref: "#/components/parameters/OrderStatus"
+      responses:
+        "200":
+          $ref: "#/components/responses/Orders"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
   /orders/{orderId}:
     get:
+      summary: Retrieve an order
       description: |
         An order with specified `orderId` will be returned.
       operationId: getOrder
@@ -245,12 +273,56 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/Order"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      summary: Cancel a pending order
+      description: |
+        The order with specified `orderId` will be cancelled, if its status is still `pending`, i.e. to be paid.
+
+        > IMPORTANT:
+        >
+        > Calling this endpoint does not cancel a `completed` order, i.e. an order that is already paid. It certainly does not provide any refund because it can only cancel order that is not already paid.
+
+      operationId: cancelOrder
+      tags:
+        - Orders
+      parameters:
+        - $ref: "#/components/parameters/OrderId"
+      responses:
+        "200":
+          $ref: "#/components/responses/EmptyOK"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /orders/{orderId}/status:
+    get:
+      summary: Retrieve the status of an order
+      description: |
+        The status of an order with specified `orderId` will be returned. 
+
+        > See response of `200 OK` for status definitions.
+
+      operationId: getOrderStatus
+      tags:
+        - Orders
+      parameters:
+        - $ref: "#/components/parameters/OrderId"
+      responses:
+        "200":
+          $ref: "#/components/responses/OrderStatus"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   # Payment
   /payments:
     post:
+      summary: Make a payment to an order recently placed
       description: |
-        Given the `orderId`, `totalAmount` in specific `currency` along with `creditCard` information, 
+        Given the `orderId`, `totalAmount` in specific `currency` along with `creditCard` information,
       operationId: createPayment
       tags:
         - Payments
@@ -271,6 +343,7 @@ paths:
 
   /payments/{paymentId}:
     get:
+      summary: (TODO)
       description: |
         (TODO)
       operationId: getPayment
@@ -286,27 +359,95 @@ paths:
 
 components:
   parameters:
+    # Order
     OrderId:
       name: orderId
       in: path
       required: true
       schema:
         type: string
-        readOnly: true
-        description: |
-          (TODO)
         example: a7dd1cf6-dc96-490b-bdf6-8685dbf5bb87
 
+    OrderStatus:
+      name: orderStatus
+      in: query
+      schema:
+        type: string
+        enum:
+          - cancelled
+          - completed
+          - error
+          - pending
+
+    CustomerPhoneNumber:
+      name: customerPhoneNumber
+      in: query
+      schema:
+        type: string
+        example: "1234567890"
+
+    CustomerEmail:
+      name: customerEmail
+      in: query
+      schema:
+        type: string
+        example: peter_parker@yahoo.com
+
+    PassengerTravelDocumentNumber:
+      name: passengerTravelDocumentNumber
+      in: query
+      schema:
+        type: string
+        example: EG12345678
+
+    # Payment
     PaymentId:
       name: paymentId
       in: path
       required: true
       schema:
         type: string
-        readOnly: true
-        description: |
-          (TODO)
         example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
+
+    # Common
+    DateTimeStart:
+      name: dateTimeStart
+      description: |
+        (TODO)
+      in: query
+      schema:
+        type: string
+        format: date-time
+
+    DateTimeEnd:
+      name: dateTimeEnd
+      description: |
+        (TODO)
+      in: query
+      schema:
+        type: string
+        format: date-time
+
+    # Pagination
+    Offset:
+      name: offset
+      description: |
+        (TODO)
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+    Size:
+      name: size
+      description: |
+        (TODO)
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
 
   responses:
     Order:
@@ -316,6 +457,22 @@ components:
           schema:
             $ref: "#/components/schemas/Order"
 
+    Orders:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Order"
+
+    OrderStatus:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderStatus"
+
     Payment:
       description: OK
       content:
@@ -323,11 +480,24 @@ components:
           schema:
             $ref: "#/components/schemas/Payment"
 
+    EmptyOK:
+      description: OK
+      content:
+        application/json:
+          example: {}
+
     BadRequest:
       description: Bad Request
       content:
         text/plain:
-          example: "Bad order request: (specific error message here)"
+          example: "Bad request: (specific error message here)"
+
+    NotFound:
+      description: Not Found
+      content:
+        text/plain:
+          example: "Not found: (specific error message here)"
+
   schemas:
     # Common
     FareClass:
@@ -610,6 +780,12 @@ components:
           description: |
             (TODO)
           example: a7dd1cf6-dc96-490b-bdf6-8685dbf5bb87
+        createdAt:
+          type: string
+          readOnly: true
+          description: |
+            (TODO)
+          format: date-time
         currency:
           type: string
           readOnly: true
@@ -617,6 +793,8 @@ components:
         totalAmount:
           type: number
           readOnly: true
+          description: |
+            (TODO)
           example: 456.78
         flights:
           description: |
@@ -645,7 +823,33 @@ components:
             clientsideCustomField1: A
             clientsideCustomField2: B
             clientsideCustomField3: C
-            
+
+    OrderStatus:
+      description: |
+        (TODO - pending = ready to be paid, cancelled = manually cancelled or timed out, completed = paid order)
+      properties:
+        status:
+          description: |
+            | status    | description                      |
+            |-----------|----------------------------------|
+            |`pending`  | the order is to be paid          |
+            |`cancelled`| manually cancelled or timed out  |
+            |`completed`| paid order                       |
+            |`error`    | some error happened to the order |
+
+          readOnly: true
+          type: string
+          default: pending
+          enum:
+            - cancelled
+            - completed
+            - error
+            - pending
+        lastUpdated:
+          readOnly: true
+          type: string
+          format: date-time
+
     Customer:
       allOf:
         - $ref: "#/components/schemas/Person"
