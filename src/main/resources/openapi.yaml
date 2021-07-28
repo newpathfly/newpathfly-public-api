@@ -870,7 +870,7 @@ components:
           example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
         lastUpdated:
           readOnly: true
-          description: 
+          description: |
             Update date-time when order status ast last changed. It should be in ISO 8601 format (UTC).
           type: string
           format: date-time
