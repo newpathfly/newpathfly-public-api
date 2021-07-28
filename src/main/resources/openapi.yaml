@@ -351,7 +351,7 @@ paths:
     get:
       summary: Retrieve information about a payment
       description: |
-        (TODO)
+        Given a `paymentId`, information about the corresponding payment will be returned.
       operationId: getPayment
       tags:
         - Payments
@@ -376,6 +376,8 @@ components:
 
     OrderStatus:
       name: orderStatus
+      description: |
+        For status definition, see `OrderStatus` under *Order Schemas*.
       in: query
       schema:
         type: string
@@ -387,6 +389,7 @@ components:
 
     CustomerPhoneNumber:
       name: customerPhoneNumber
+      description: Customer phone number (without country code)
       in: query
       schema:
         type: string
@@ -394,6 +397,7 @@ components:
 
     CustomerEmail:
       name: customerEmail
+      description: Customer email address
       in: query
       schema:
         type: string
@@ -401,6 +405,7 @@ components:
 
     PassengerTravelDocumentNumber:
       name: passengerTravelDocumentNumber
+      description: Travel document number, such as passport number, of a passenger
       in: query
       schema:
         type: string
@@ -419,7 +424,7 @@ components:
     DateTimeStart:
       name: dateTimeStart
       description: |
-        (TODO)
+        A start date-time earlier than any order returned. It should be in ISO 8601 format (UTC).
       in: query
       schema:
         type: string
@@ -428,7 +433,7 @@ components:
     DateTimeEnd:
       name: dateTimeEnd
       description: |
-        (TODO)
+        A end date-time later than any order returned. It should be in ISO 8601 format (UTC).
       in: query
       schema:
         type: string
@@ -437,8 +442,6 @@ components:
     # Pagination
     Offset:
       name: offset
-      description: |
-        (TODO)
       in: query
       schema:
         type: integer
@@ -447,8 +450,6 @@ components:
 
     Size:
       name: size
-      description: |
-        (TODO)
       in: query
       schema:
         type: integer
@@ -788,8 +789,6 @@ components:
 
     # Order
     Order:
-      description: |
-        (TODO)
       required:
         - flights
         - customer
@@ -798,29 +797,29 @@ components:
         orderId:
           type: string
           readOnly: true
-          description: |
-            (TODO)
           example: a7dd1cf6-dc96-490b-bdf6-8685dbf5bb87
         createdAt:
           type: string
           readOnly: true
           description: |
-            (TODO)
+            Creation date/time of the order in ISO 8601 format (UTC)
           format: date-time
         currency:
           type: string
           readOnly: true
+          description: |
+            3-letter currency code in ISO 4217 format
           example: EUR
         totalAmount:
           type: number
           readOnly: true
           description: |
-            (TODO)
+            Total price amount of all passengers for the flight, including tax and miscellaneous fees.
           example: 456.78
         flights:
+          type: array
           description: |
             A one-way trip consists of one flight. A round-trip consists of two flights going forth and back between two places.
-          type: array
           minItems: 1
           items:
             $ref: "#/components/schemas/Flight"
@@ -846,8 +845,6 @@ components:
             clientsideCustomField3: C
 
     OrderStatus:
-      description: |
-        (TODO - pending = ready to be paid, cancelled = manually cancelled or timed out, completed = paid order)
       properties:
         status:
           description: |
@@ -868,22 +865,31 @@ components:
             - pending
         paymentId:
           readOnly: true
+          nullable: true
           type: string
           example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
         lastUpdated:
           readOnly: true
+          description: 
+            Update date-time when order status ast last changed. It should be in ISO 8601 format (UTC).
           type: string
           format: date-time
 
     Customer:
+      description: |
+        Customer information, including contact information for order related issues
       allOf:
         - $ref: "#/components/schemas/Person"
         - properties:
             phoneCountryCode:
               type: string
+              description: |
+                Country calling code defined by ITU, starting with international dialing prefix `+`
               example: "+1"
             phoneNumber:
               type: string
+              description: |
+                Phone number including area code without any punctuation
               example: "1234567890"
             email:
               type: string
@@ -895,25 +901,30 @@ components:
         - properties:
             type:
               type: string
+              description: |
+                - Adult
+                - Child
+                - Infant
+              default: ADT
               enum:
                 - ADT
                 - CHD
                 - INF
             birthday:
               type: string
+              description: |
+                Passenger birthday in `YYYY-MM-DD` format
               format: date
               example: "2001-01-01"
             gender:
               type: string
               enum:
-                - M
                 - F
+                - M
             travelDocument:
               $ref: "#/components/schemas/TravelDocument"
 
     Person:
-      description: |
-        (TODO)
       properties:
         firstName:
           type: string
@@ -924,11 +935,11 @@ components:
 
     TravelDocument:
       description: |
-        (TODO)
+        Passenger travel document
       properties:
         type:
           description: |
-            (TODO)
+            Type of travel document
           type: string
           default: PASSPORT
           enum:
@@ -938,13 +949,17 @@ components:
         number:
           type: string
           description: |
-            (TODO)
+            Travel document number
           example: EG12345678
         expiryDate:
           type: string
+          description: |
+            Travel document expiry date in `YYYY-MM-DD` format
           format: date
         placeOfIssue:
           type: string
+          description: |
+            Place (e.g. country, province, city) where the travel document was issued
           example: USA
 
     # Payment
@@ -962,7 +977,7 @@ components:
         createdAt:
           readOnly: true
           description: |
-            (TODO)
+            Creation date/time of the payment in ISO 8601 format (UTC)
           type: string
           format: date-time
         orderId:
