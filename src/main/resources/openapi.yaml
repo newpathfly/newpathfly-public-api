@@ -1,0 +1,1034 @@
+openapi: 3.0.3
+info:
+  title: Virtual Interlining API
+  version: 2.2.0
+  description: |
+    # Introduction
+
+    ## What is Virtual Interlining?
+    ​
+    Interlining is an airline-industry-specific term. Carriers come to an agreement with others, or join an alliance, and then passengers can fly to their destination using all of those airlines in agreement. 
+
+    Virtual interlining is where the technology behind the scenes organizes the means for passengers to travel on multiple carriers on a single itinerary even without an agreement. Our virtual interlining technology not only gives your more content in addition to GDS, it also gives contents with more competitive pricing.
+
+    ## OpenAPI specification
+
+    This API specification can be downloaded in [OpenAPI](https://openapis.org) format. Many [code generator tools](https://openapi-generator.tech/docs/generators) are available to generate client code in different programming languages based on the specification file.
+
+    For example, to generate client code in Java, run following command.
+
+    ```text
+    openapi-generator-cli generate -g java -o newpathfly -i openapi.yaml
+    ```
+
+  contact:
+    name: newpathfly
+
+servers:
+  - url: http://uat-api.newpathfly.com/v1
+  - url: http://api.newpathfly.com/v1
+
+tags:
+  - name: Shopping
+    description: |
+      Search for virtual interlining offerings of cheapest flights.
+
+  - name: Orders
+    description: |
+      Place orders of virtually interlined flights.
+
+  - name: Payments
+    description: |
+      Make payments to orders of virtually interlined flights.
+
+  # Enums
+  - name: FareClass
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/FareClass" />
+
+  - name: SeatStatus
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/SeatStatus" />
+
+  - name: TripType
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/TripType" />
+
+  # Common Schemas
+  - name: Flight
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Flight" />
+
+  - name: Segment
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Segment" />
+
+  # Shopping Schemas
+  - name: SearchRequest
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/SearchRequest" />
+
+  - name: SearchRequestSuccessful
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/SearchRequestSuccessful" />
+
+  - name: SearchRequestFailed
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/SearchRequestFailed" />
+
+  - name: SearchResultPoll
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/SearchResultPoll" />
+
+  - name: SearchResult
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/SearchResult" />
+
+  - name: Query
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Query" />
+
+  - name: Trip
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Trip" />
+
+  - name: Price
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Price" />
+
+  # Order Schemas
+  - name: Order
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Order" />
+
+  - name: OrderStatus
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/OrderStatus" />
+
+  - name: Customer
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Customer" />
+
+  - name: Passenger
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Passenger" />
+
+  - name: TravelDocument
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/TravelDocument" />
+
+  # Payment Schemas
+  - name: Payment
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/Payment" />
+
+  - name: CreditCard
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/CreditCard" />
+
+x-tagGroups:
+  - name: API
+    tags:
+      - Shopping
+      - Orders
+      - Payments
+
+  - name: Enums
+    tags:
+      - FareClass
+      - SeatStatus
+      - TripType
+
+  - name: Common Schemas
+    tags:
+      - Flight
+      - Segment
+
+  - name: Shopping Schemas
+    tags:
+      - SearchRequest
+      - SearchRequestSuccessful
+      - SearchRequestFailed
+      - SearchResultPoll
+      - SearchResult
+      - Query
+      - Trip
+      - Price
+
+  - name: Order Schemas
+    tags:
+      - Order
+      - OrderStatus
+      - Customer
+      - Passenger
+      - TravelDocument
+
+  - name: Payment Schemas
+    tags:
+      - Payment
+      - CreditCard
+
+paths:
+  # Shopping
+  /searches:
+    post:
+      summary: Create a search request
+      description: A `requestId` will be returned given a valid search request. This `requestId` is required for polling for search results later on.
+      operationId: createSearch
+      tags:
+        - Shopping
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchRequestSuccessful"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchRequestFailed"
+
+  /polls:
+    post:
+      summary: Poll for search results
+      description: A `requestId` is needed for polling for search results corresponding to its search request.
+      operationId: createPoll
+      tags:
+        - Shopping
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchResultPoll"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResult"
+
+  # Order
+  /orders:
+    post:
+      summary: Create an order of specific flight
+      description: |
+        Given information of specific `flights`, `customer` and `passengers`, an order with an unique `orderId` will be returned along with `totalAmount` in particular `currency`.
+
+        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular order for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when an order is returned it is convenient to identify the corresponding order at client side.
+      operationId: createOrder
+      tags:
+        - Orders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+      responses:
+        "200":
+          $ref: "#/components/responses/Order"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+    get:
+      summary: Retrieve one or more orders
+      description: |
+        Given one or more criteria in the query string, one or more matching orders will be returned.
+
+        Results will also be paged based on `offset` and `size`.
+      operationId: getOrders
+      tags:
+        - Orders
+      parameters:
+        - $ref: "#/components/parameters/CustomerPhoneNumber"
+        - $ref: "#/components/parameters/CustomerEmail"
+        - $ref: "#/components/parameters/PassengerTravelDocumentNumber"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Size"
+        - $ref: "#/components/parameters/DateTimeStart"
+        - $ref: "#/components/parameters/DateTimeEnd"
+        - $ref: "#/components/parameters/OrderStatus"
+      responses:
+        "200":
+          $ref: "#/components/responses/Orders"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /orders/{orderId}:
+    get:
+      summary: Retrieve information about an order
+      description: |
+        An order with specified `orderId` will be returned.
+      operationId: getOrder
+      tags:
+        - Orders
+      parameters:
+        - $ref: "#/components/parameters/OrderId"
+      responses:
+        "200":
+          $ref: "#/components/responses/Order"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      summary: Cancel a pending order
+      description: |
+        The order with specified `orderId` will be cancelled, if its status is still `pending`, i.e. to be paid.
+
+        > IMPORTANT:
+        >
+        > Calling this endpoint does not cancel a `completed` order, i.e. an order that is already paid. It certainly does not provide any refund because it can only cancel order that is not already paid.
+
+      operationId: cancelOrder
+      tags:
+        - Orders
+      parameters:
+        - $ref: "#/components/parameters/OrderId"
+      responses:
+        "200":
+          $ref: "#/components/responses/EmptyOK"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /orders/{orderId}/status:
+    get:
+      summary: Retrieve the status of an order
+      description: |
+        The status of an order with specified `orderId` will be returned. 
+
+        > See response of `200 OK` for status definitions.
+
+      operationId: getOrderStatus
+      tags:
+        - Orders
+      parameters:
+        - $ref: "#/components/parameters/OrderId"
+      responses:
+        "200":
+          $ref: "#/components/responses/OrderStatus"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # Payment
+  /payments:
+    post:
+      summary: Make a payment to an order recently placed
+      description: |
+        Given the `orderId`, `totalAmount` in specific `currency` along with `creditCard` information, a payment with an unique `paymentId` will be made and returned.
+      operationId: createPayment
+      tags:
+        - Payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Payment"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "402":
+          $ref: "#/components/responses/PaymentFailed"
+        "409":
+          $ref: "#/components/responses/PaymentConflict"
+
+  /payments/{paymentId}:
+    get:
+      summary: Retrieve information about a payment
+      description: |
+        Given a `paymentId`, information about the corresponding payment will be returned.
+      operationId: getPayment
+      tags:
+        - Payments
+      parameters:
+        - $ref: "#/components/parameters/PaymentId"
+      responses:
+        "200":
+          $ref: "#/components/responses/Payment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+components:
+  parameters:
+    # Order
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: string
+        example: a7dd1cf6-dc96-490b-bdf6-8685dbf5bb87
+
+    OrderStatus:
+      name: orderStatus
+      description: |
+        For status definition, see `OrderStatus` under *Order Schemas*.
+      in: query
+      schema:
+        type: string
+        enum:
+          - cancelled
+          - completed
+          - error
+          - pending
+
+    CustomerPhoneNumber:
+      name: customerPhoneNumber
+      description: Customer phone number (without country code)
+      in: query
+      schema:
+        type: string
+        example: "1234567890"
+
+    CustomerEmail:
+      name: customerEmail
+      description: Customer email address
+      in: query
+      schema:
+        type: string
+        example: peter_parker@yahoo.com
+
+    PassengerTravelDocumentNumber:
+      name: passengerTravelDocumentNumber
+      description: Travel document number, such as passport number, of a passenger
+      in: query
+      schema:
+        type: string
+        example: EG12345678
+
+    # Payment
+    PaymentId:
+      name: paymentId
+      in: path
+      required: true
+      schema:
+        type: string
+        example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
+
+    # Common
+    DateTimeStart:
+      name: dateTimeStart
+      description: |
+        A start date-time earlier than any order returned. It should be in ISO 8601 format (UTC).
+      in: query
+      schema:
+        type: string
+        format: date-time
+
+    DateTimeEnd:
+      name: dateTimeEnd
+      description: |
+        A end date-time later than any order returned. It should be in ISO 8601 format (UTC).
+      in: query
+      schema:
+        type: string
+        format: date-time
+
+    # Pagination
+    Offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+    Size:
+      name: size
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 20
+
+  responses:
+    # Order
+    Order:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Order"
+
+    Orders:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Order"
+
+    OrderStatus:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderStatus"
+
+    # Payment
+    Payment:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Payment"
+
+    PaymentFailed:
+      description: Payment Required
+      content:
+        text/plain:
+          example: Payment to order {{orderId}} has failed.
+
+    PaymentConflict:
+      description: Conflict
+      content:
+        text/plain:
+          example: Order {{orderId}} is already paid.
+
+    # Common
+    EmptyOK:
+      description: OK
+      content:
+        application/json:
+          example: {}
+
+    BadRequest:
+      description: Bad Request
+      content:
+        text/plain:
+          example: "Bad request: (specific error message here)"
+
+    NotFound:
+      description: Not Found
+      content:
+        text/plain:
+          example: "Not found: (specific error message here)"
+
+  schemas:
+    # Common
+    FareClass:
+      description: This is the fare class, which is one of `Economy`, `PremiumEconomy`, `Business`, `First` and `All`, where `All` means query for all fare classes.
+      type: string
+      default: Economy
+      enum:
+        - Economy
+        - PremiumEconomy
+        - Business
+        - First
+        - All
+
+    Flight:
+      description: A flight is a pair of original departure to final destination.
+      properties:
+        segments:
+          description: A flight consists of one or more segments. For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/Segment"
+
+    Segment:
+      description: A segment is a pair of departure and arrival without any stop in-between.
+      properties:
+        fareClass:
+          $ref: "#/components/schemas/FareClass"
+        depDate:
+          description: This is the departure date in `YYYYMMDD` format.
+          type: string
+          pattern: '^\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$'
+          example: "20210401"
+        depTime:
+          description: This is the departure time in `HH:mm` format.
+          type: string
+          readOnly: true
+          pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
+          example: "12:45"
+        depAirport:
+          description: This is the departure airport specified using its IATA code.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: LON
+        arrDate:
+          description: This is the arrival date in `YYYYMMDD` format.
+          type: string
+          readOnly: true
+          pattern: '^\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$'
+          example: "20210401"
+        arrTime:
+          description: This is the arrival time in `HH:mm` format.
+          type: string
+          readOnly: true
+          pattern: "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
+          example: "17:50"
+        arrAirport:
+          description: This is the arrival airport specified using its IATA code.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: CGN
+        flightNo:
+          description: This is the flight number starting with carrier IATA code.
+          type: string
+          example: AC103
+        carrier:
+          description: This is the 2-letter IATA carrier code
+          type: string
+          minLength: 2
+          maxLength: 2
+          example: AC
+
+    # Search Request
+    SearchRequest:
+      description: This is the payload to be sent when calling `/searches` endpoint.
+      required:
+        - queries
+        - adultAmount
+      properties:
+        queries:
+          description: This is a list containing the same number of queries as the number of flights for the trip. For one-way trip there should be one query, whereas for round trip there should be two queries.
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/Query"
+        type:
+          $ref: "#/components/schemas/TripType"
+        adultAmount:
+          description: This is the number of adult passengers
+          type: integer
+          minimum: 1
+        childAmount:
+          description: This is the number of child passengers
+          type: integer
+          minimum: 0
+        infantAmount:
+          description: This is the number of infant passengers
+          type: integer
+          minimum: 0
+        fareClass:
+          $ref: "#/components/schemas/FareClass"
+
+    SearchRequestSuccessful:
+      description: This is the response when a `SearchRequest` is accepted.
+      properties:
+        resultCode:
+          description: The result code is always `200` for accepted request.
+          type: integer
+          default: 200
+        requestId:
+          description: This value should be included in the polling later on.
+          type: string
+          example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+
+    SearchRequestFailed:
+      description: This is the response when a `SearchRequest` is rejected.
+      properties:
+        resultCode:
+          description: This value is always `400` for rejected request.
+          type: integer
+          default: 400
+        message:
+          description: This message contains the reason for rejected request.
+          type: string
+          example: invalid search request
+
+    # Poll
+    SearchResultPoll:
+      description: This is the payload to be sent when calling `/polls` endpoint. The virtual interlining engine will mostly likely keep generating results at the backend, so stop calling this endpoint when number of results is good enough as a general practice.
+      required:
+        - requestId
+      properties:
+        requestId:
+          description: This is the request ID for which to be polled.
+          type: string
+          example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+        offset:
+          description: This is the offset of the results to be polled next.
+          type: integer
+          minimum: 0
+          default: 100
+        size:
+          description: This is the maximum number of results to be polled. The actual number of results might be less when there is no more results available at the moment.
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+
+    SearchResult:
+      description: This result contains up to the number of flight trips specified by `size` in the request.
+      properties:
+        resultCode:
+          description: The result code is `200` for a successful poll and it is `400` otherwise.
+          type: integer
+          example: 200
+        message:
+          description: This message contains the reason for a failed poll.
+          type: string
+          example: Any error message goes here.
+        currencyCode:
+          description: This is the 3-letter currency code in which price is provided.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: EUR
+        trips:
+          description: This is a list of trips based on `queries` and `TripType` in the corresponding `SearchRequest`.
+          type: array
+          items:
+            $ref: "#/components/schemas/Trip"
+
+    # Domain Models
+    Query:
+      description: This is a flight query from departure airport to arrival airport on specific departure date. This query corresponding to a single flight in a trip, where a one-way trip contains only one flight and a round trip contains two flights.
+      required:
+        - depAirport
+        - arrAirport
+        - date
+      properties:
+        depAirport:
+          description: This is the departure airport specified using its IATA code.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: LON
+        arrAirport:
+          description: This is the arrival airport specified using its IATA code.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: CGN
+        date:
+          description: This is the departure date in `YYYYMMDD` format
+          type: string
+          pattern: '^\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$'
+          example: "20210401"
+
+    Trip:
+      description: A trip is one complete travel. It can be one-way trip or a round trip, depending on the number of included flights.
+      properties:
+        flights:
+          description: A one-way trip consists of one flight. A round-trip consists of two flights going forth and back between two places.
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/Flight"
+        prices:
+          description: This is a map between each price type and the actual pricing information. `ADT`, `CHD` and `INF` correspond to each individual passenger type. `ALL` corresponds to all passengers. The total price in `ALL` should equal to `ADT` * `adultAmount` + `CHD` * `childAmount` + `INF` * `infantAmount`.
+          properties:
+            ADT:
+              $ref: "#/components/schemas/Price"
+            CHD:
+              $ref: "#/components/schemas/Price"
+            INF:
+              $ref: "#/components/schemas/Price"
+            ALL:
+              $ref: "#/components/schemas/Price"
+
+    Price:
+      description: This is the pricing information including `price`, `tax` and `totalPrice`.
+      properties:
+        price:
+          description: This it the before tax price.
+          type: number
+          format: double
+          minimum: 0
+          example: 123.45
+        tax:
+          description: This it the tax.
+          type: number
+          format: double
+          minimum: 0
+          example: 6.78
+        totalPrice:
+          description: This it the total price including tax.
+          type: number
+          format: double
+          minimum: 0
+          example: 130.23
+        seatsStatus:
+          $ref: "#/components/schemas/SeatStatus"
+        currencyCode:
+          description: This is the 3-letter currency code in which price is provided.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: EUR
+
+    SeatStatus:
+      description: Seat status is `EMPTY` when there is no seat. Else, it is `LIMITED` when there are less than 8 seats. Else, it is `ENOUGH`.
+      type: string
+      enum:
+        - EMPTY
+        - ENOUGH
+        - LIMITED
+      example: ENOUGH
+
+    TripType:
+      description: This is the trip type, where `OW` is for one-way trip and `RT` is for round trip.
+      type: string
+      default: OW
+      enum:
+        - OW
+        - RT
+
+    # Order
+    Order:
+      required:
+        - flights
+        - customer
+        - passengers
+      properties:
+        orderId:
+          type: string
+          readOnly: true
+          example: a7dd1cf6-dc96-490b-bdf6-8685dbf5bb87
+        createdAt:
+          type: string
+          readOnly: true
+          description: |
+            Creation date/time of the order in ISO 8601 format (UTC)
+          format: date-time
+        currency:
+          type: string
+          readOnly: true
+          description: |
+            3-letter currency code in ISO 4217 format
+          example: EUR
+        totalAmount:
+          type: number
+          readOnly: true
+          description: |
+            Total price amount of all passengers for the flight, including tax and miscellaneous fees.
+          example: 456.78
+        flights:
+          type: array
+          description: |
+            A one-way trip consists of one flight. A round-trip consists of two flights going forth and back between two places.
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/Flight"
+        customer:
+          $ref: "#/components/schemas/Customer"
+        passengers:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/Passenger"
+        extended:
+          description: |
+            Extended data from client side to associate with this particular order. This is useful for storing some information later needs to be retrieved, such as client side order ID. The data is in form of `key:value` pairs. All data will be returned upon getting a order.
+          type: object
+          additionalProperties:
+            type: string
+            description: |
+              a custom value associated with this order
+          example:
+            clientsideOrderId: O1234
+            clientsideCustomField1: A
+            clientsideCustomField2: B
+            clientsideCustomField3: C
+
+    OrderStatus:
+      properties:
+        status:
+          description: |
+            | status    | description                      |
+            |-----------|----------------------------------|
+            |`pending`  | the order is to be paid          |
+            |`cancelled`| manually cancelled or timed out  |
+            |`completed`| paid order                       |
+            |`error`    | some error happened to the order |
+
+          readOnly: true
+          type: string
+          default: pending
+          enum:
+            - cancelled
+            - completed
+            - error
+            - pending
+        paymentId:
+          readOnly: true
+          nullable: true
+          type: string
+          example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
+        lastUpdated:
+          readOnly: true
+          description: |
+            Update date-time when order status ast last changed. It should be in ISO 8601 format (UTC).
+          type: string
+          format: date-time
+
+    Customer:
+      description: |
+        Customer information, including contact information for order related issues
+      allOf:
+        - $ref: "#/components/schemas/Person"
+        - properties:
+            phoneCountryCode:
+              type: string
+              description: |
+                Country calling code defined by ITU, starting with international dialing prefix `+`
+              example: "+1"
+            phoneNumber:
+              type: string
+              description: |
+                Phone number including area code without any punctuation
+              example: "1234567890"
+            email:
+              type: string
+              example: "peter_parker@yahoo.com"
+
+    Passenger:
+      allOf:
+        - $ref: "#/components/schemas/Person"
+        - properties:
+            type:
+              type: string
+              description: |
+                - Adult
+                - Child
+                - Infant
+              default: ADT
+              enum:
+                - ADT
+                - CHD
+                - INF
+            birthday:
+              type: string
+              description: |
+                Passenger birthday in `YYYY-MM-DD` format
+              format: date
+              example: "2001-01-01"
+            gender:
+              type: string
+              enum:
+                - F
+                - M
+            travelDocument:
+              $ref: "#/components/schemas/TravelDocument"
+
+    Person:
+      properties:
+        firstName:
+          type: string
+          example: Peter
+        lastName:
+          type: string
+          example: Parker
+
+    TravelDocument:
+      description: |
+        Passenger travel document
+      properties:
+        type:
+          description: |
+            Type of travel document
+          type: string
+          default: PASSPORT
+          enum:
+            - DRIVER_LICENSE
+            - NATIONAL_ID
+            - PASSPORT
+        number:
+          type: string
+          description: |
+            Travel document number
+          example: EG12345678
+        expiryDate:
+          type: string
+          description: |
+            Travel document expiry date in `YYYY-MM-DD` format
+          format: date
+        placeOfIssue:
+          type: string
+          description: |
+            Place (e.g. country, province, city) where the travel document was issued
+          example: USA
+
+    # Payment
+    Payment:
+      required:
+        - orderId
+        - currency
+        - totalAmount
+        - creditCard
+      properties:
+        paymentId:
+          readOnly: true
+          type: string
+          example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
+        createdAt:
+          readOnly: true
+          description: |
+            Creation date/time of the payment in ISO 8601 format (UTC)
+          type: string
+          format: date-time
+        orderId:
+          type: string
+          example: a7dd1cf6-dc96-490b-bdf6-8685dbf5bb87
+        currency:
+          type: string
+          example: EUR
+        totalAmount:
+          type: number
+          example: 456.78
+        creditCard:
+          $ref: "#/components/schemas/CreditCard"
+
+    CreditCard:
+      writeOnly: true
+      properties:
+        type:
+          type: string
+          enum:
+            - MASTERCARD
+            - VISA
+        number:
+          type: string
+          example: "5250567933594297"
+        cvc:
+          type: string
+          example: "123"
+        expiryMonth:
+          type: string
+          example: "08"
+        expiryYear:
+          type: string
+          example: "24"
+        holderFirstName:
+          type: string
+          example: Peter
+        holderLastName:
+          type: string
+          example: Parker
+        address:
+          type: string
+          example: "738 Winter Garden Drive"
+        city:
+          type: string
+          example: New York
+        zipCode:
+          type: string
+          example: "11375"
+        countryCode:
+          type: string
+          example: US
+          description: |
+            2-letter ISO country code (alpha-2) as listed at https://en.wikipedia.org/wiki/ISO_3166-1
