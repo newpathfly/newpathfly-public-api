@@ -264,7 +264,7 @@ paths:
 
   /orders/{orderId}:
     get:
-      summary: Retrieve an order
+      summary: Retrieve information about an order
       description: |
         An order with specified `orderId` will be returned.
       operationId: getOrder
@@ -349,7 +349,7 @@ paths:
 
   /payments/{paymentId}:
     get:
-      summary: (TODO)
+      summary: Retrieve information about a payment
       description: |
         (TODO)
       operationId: getPayment
