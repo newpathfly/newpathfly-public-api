@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Virtual Interlining API
-  version: 2.2.0
+  version: 2.3.0
   description: |
     # Introduction
 
@@ -71,10 +71,6 @@ tags:
   - name: SearchRequestSuccessful
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/SearchRequestSuccessful" />
-
-  - name: SearchRequestFailed
-    description: |
-      <SchemaDefinition schemaRef="#/components/schemas/SearchRequestFailed" />
 
   - name: SearchResultPoll
     description: |
@@ -148,7 +144,6 @@ x-tagGroups:
     tags:
       - SearchRequest
       - SearchRequestSuccessful
-      - SearchRequestFailed
       - SearchResultPoll
       - SearchResult
       - Query
@@ -192,14 +187,14 @@ paths:
         "400":
           description: Bad Request
           content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SearchRequestFailed"
+            text/plain:
+              example: invalid search request
 
   /polls:
     post:
       summary: Poll for search results
-      description: A `requestId` is needed for polling for search results corresponding to its search request.
+      description: |
+        Given a `requestId` obtained from search, corresponding search results will be returned in full (NOT incremental). Different response status code indicates whether another poll is neccessary until entire full results are returned.
       operationId: createPoll
       tags:
         - Shopping
@@ -215,6 +210,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SearchResult"
+        "206":
+          description: Partial Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResult"
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              example: Result cannot be returned to due bad request.
 
   # Order
   /orders:
@@ -627,26 +633,10 @@ components:
     SearchRequestSuccessful:
       description: This is the response when a `SearchRequest` is accepted.
       properties:
-        resultCode:
-          description: The result code is always `200` for accepted request.
-          type: integer
-          default: 200
         requestId:
           description: This value should be included in the polling later on.
           type: string
           example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
-
-    SearchRequestFailed:
-      description: This is the response when a `SearchRequest` is rejected.
-      properties:
-        resultCode:
-          description: This value is always `400` for rejected request.
-          type: integer
-          default: 400
-        message:
-          description: This message contains the reason for rejected request.
-          type: string
-          example: invalid search request
 
     # Poll
     SearchResultPoll:
@@ -673,10 +663,6 @@ components:
     SearchResult:
       description: This result contains up to the number of flight trips specified by `size` in the request.
       properties:
-        resultCode:
-          description: The result code is `200` for a successful poll and it is `400` otherwise.
-          type: integer
-          example: 200
         message:
           description: This message contains the reason for a failed poll.
           type: string
