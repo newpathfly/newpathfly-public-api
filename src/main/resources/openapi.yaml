@@ -659,6 +659,13 @@ components:
           minimum: 1
           maximum: 100
           default: 10
+        currency:
+          description: Currency code of results to be polled.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: USD
+          default: USD
 
     SearchResult:
       description: This result contains up to the number of flight trips specified by `size` in the request.
@@ -683,20 +690,34 @@ components:
     Query:
       description: This is a flight query from departure airport to arrival airport on specific departure date. This query corresponding to a single flight in a trip, where a one-way trip contains only one flight and a round trip contains two flights.
       required:
+        - depCity
         - depAirport
+        - arrCity
         - arrAirport
         - date
       properties:
+        depCity:
+          description: This is the departure city specified using its IATA code.
+          type: string
+          minLength: 0
+          maxLength: 3
+          example: LON
         depAirport:
           description: This is the departure airport specified using its IATA code.
           type: string
-          minLength: 3
+          minLength: 0
           maxLength: 3
           example: LON
+        arrCity:
+          description: This is the arrival city specified using its IATA code.
+          type: string
+          minLength: 0
+          maxLength: 3
+          example: CGN
         arrAirport:
           description: This is the arrival airport specified using its IATA code.
           type: string
-          minLength: 3
+          minLength: 0
           maxLength: 3
           example: CGN
         date:
