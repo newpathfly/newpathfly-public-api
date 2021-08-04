@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Virtual Interlining API
-  version: 2.3.0
+  version: 2.3.3
   description: |
     # Introduction
 
@@ -33,13 +33,13 @@ tags:
     description: |
       Search for virtual interlining offerings of cheapest flights.
 
-  - name: Orders
+  - name: Booking
     description: |
-      Place orders of virtually interlined flights.
+      Place booking orders of virtually interlined flights.
 
   - name: Payments
     description: |
-      Make payments to orders of virtually interlined flights.
+      Make payments to booking orders of virtually interlined flights.
 
   # Enums
   - name: FareClass
@@ -97,9 +97,21 @@ tags:
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Order" />
 
+  - name: OrderResponse
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/OrderResponse" />
+
+  - name: OrdersResponse
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/OrdersResponse" />
+
   - name: OrderStatus
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/OrderStatus" />
+
+  - name: OrderStatusResponse
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/OrderStatusResponse" />
 
   - name: Customer
     description: |
@@ -118,6 +130,10 @@ tags:
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Payment" />
 
+  - name: PaymentResponse
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/PaymentResponse" />
+
   - name: CreditCard
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/CreditCard" />
@@ -126,7 +142,7 @@ x-tagGroups:
   - name: API
     tags:
       - Shopping
-      - Orders
+      - Booking
       - Payments
 
   - name: Enums
@@ -150,10 +166,13 @@ x-tagGroups:
       - Trip
       - Price
 
-  - name: Order Schemas
+  - name: Booking Schemas
     tags:
       - Order
+      - OrderResponse
+      - OrdersResponse
       - OrderStatus
+      - OrderStatusResponse
       - Customer
       - Passenger
       - TravelDocument
@@ -161,6 +180,7 @@ x-tagGroups:
   - name: Payment Schemas
     tags:
       - Payment
+      - PaymentResponse
       - CreditCard
 
 paths:
@@ -225,14 +245,14 @@ paths:
   # Order
   /orders:
     post:
-      summary: Create an order of specific flight
+      summary: Create a booking order of specific flight
       description: |
-        Given information of specific `flights`, `customer` and `passengers`, an order with an unique `orderId` will be returned along with `totalAmount` in particular `currency`.
+        Given information of specific `flights`, `customer` and `passengers`, a booking order with an unique `orderId` will be returned along with `totalAmount` in particular `currency`.
 
-        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular order for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when an order is returned it is convenient to identify the corresponding order at client side.
+        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular booking order for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when a booking order is returned it is convenient to identify the corresponding order at client side.
       operationId: createOrder
       tags:
-        - Orders
+        - Booking
       requestBody:
         content:
           application/json:
@@ -240,19 +260,19 @@ paths:
               $ref: "#/components/schemas/Order"
       responses:
         "200":
-          $ref: "#/components/responses/Order"
+          $ref: "#/components/responses/OrderResponseOK"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OrderResponseBadRequest"
 
     get:
-      summary: Retrieve one or more orders
+      summary: Retrieve one or more booking orders
       description: |
-        Given one or more criteria in the query string, one or more matching orders will be returned.
+        Given one or more criteria in the query string, one or more matching booking orders will be returned.
 
         Results will also be paged based on `offset` and `size`.
       operationId: getOrders
       tags:
-        - Orders
+        - Booking
       parameters:
         - $ref: "#/components/parameters/CustomerPhoneNumber"
         - $ref: "#/components/parameters/CustomerEmail"
@@ -264,71 +284,71 @@ paths:
         - $ref: "#/components/parameters/OrderStatus"
       responses:
         "200":
-          $ref: "#/components/responses/Orders"
+          $ref: "#/components/responses/OrdersResponseOK"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/OrdersResponseBadRequest"
 
   /orders/{orderId}:
     get:
-      summary: Retrieve information about an order
+      summary: Retrieve information about a booking order
       description: |
-        An order with specified `orderId` will be returned.
+        A booking order with specified `orderId` will be returned.
       operationId: getOrder
       tags:
-        - Orders
+        - Booking
       parameters:
         - $ref: "#/components/parameters/OrderId"
       responses:
         "200":
-          $ref: "#/components/responses/Order"
+          $ref: "#/components/responses/OrderResponseOK"
         "404":
-          $ref: "#/components/responses/NotFound"
+          $ref: "#/components/responses/OrderResponseNotFound"
 
     delete:
-      summary: Cancel a pending order
+      summary: Cancel a pending booking order
       description: |
-        The order with specified `orderId` will be cancelled, if its status is still `pending`, i.e. to be paid.
+        The booking order with specified `orderId` will be cancelled, if its status is still `pending`, i.e. to be paid.
 
         > IMPORTANT:
         >
-        > Calling this endpoint does not cancel a `completed` order, i.e. an order that is already paid. It certainly does not provide any refund because it can only cancel order that is not already paid.
+        > Calling this endpoint does not cancel a `completed` booking order, i.e. a booking order that is already paid. It certainly does not provide any refund because it can only cancel a booking order that is not already paid.
 
       operationId: cancelOrder
       tags:
-        - Orders
+        - Booking
       parameters:
         - $ref: "#/components/parameters/OrderId"
       responses:
         "200":
           $ref: "#/components/responses/EmptyOK"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/EmptyBadRequest"
         "404":
-          $ref: "#/components/responses/NotFound"
+          $ref: "#/components/responses/EmptyNotFound"
 
   /orders/{orderId}/status:
     get:
-      summary: Retrieve the status of an order
+      summary: Retrieve the status of a booking order
       description: |
-        The status of an order with specified `orderId` will be returned. 
+        The status of a booking order with specified `orderId` will be returned. 
 
         > See response of `200 OK` for status definitions.
 
       operationId: getOrderStatus
       tags:
-        - Orders
+        - Booking
       parameters:
         - $ref: "#/components/parameters/OrderId"
       responses:
         "200":
-          $ref: "#/components/responses/OrderStatus"
+          $ref: "#/components/responses/OrderStatusResponseOK"
         "404":
-          $ref: "#/components/responses/NotFound"
+          $ref: "#/components/responses/OrderStatusResponseNotFound"
 
   # Payment
   /payments:
     post:
-      summary: Make a payment to an order recently placed
+      summary: Make a payment to a booking order recently placed
       description: |
         Given the `orderId`, `totalAmount` in specific `currency` along with `creditCard` information, a payment with an unique `paymentId` will be made and returned.
       operationId: createPayment
@@ -341,17 +361,13 @@ paths:
               $ref: "#/components/schemas/Payment"
       responses:
         "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Payment"
+          $ref: "#/components/responses/PaymentResponseOK"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/PaymentResponseBadRequest"
         "402":
-          $ref: "#/components/responses/PaymentFailed"
+          $ref: "#/components/responses/PaymentResponseFailed"
         "409":
-          $ref: "#/components/responses/PaymentConflict"
+          $ref: "#/components/responses/PaymentResponseConflict"
 
   /payments/{paymentId}:
     get:
@@ -365,9 +381,9 @@ paths:
         - $ref: "#/components/parameters/PaymentId"
       responses:
         "200":
-          $ref: "#/components/responses/Payment"
+          $ref: "#/components/responses/PaymentResponseOK"
         "400":
-          $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/PaymentResponseBadRequest"
 
 components:
   parameters:
@@ -430,7 +446,7 @@ components:
     DateTimeStart:
       name: dateTimeStart
       description: |
-        A start date-time earlier than any order returned. It should be in ISO 8601 format (UTC).
+        A start date-time earlier than any booking order returned. It should be in ISO 8601 format (UTC).
       in: query
       schema:
         type: string
@@ -439,7 +455,7 @@ components:
     DateTimeEnd:
       name: dateTimeEnd
       description: |
-        A end date-time later than any order returned. It should be in ISO 8601 format (UTC).
+        A end date-time later than any booking order returned. It should be in ISO 8601 format (UTC).
       in: query
       schema:
         type: string
@@ -464,70 +480,133 @@ components:
 
   responses:
     # Order
-    Order:
+    OrderResponseOK:
       description: OK
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Order"
+            $ref: "#/components/schemas/OrderResponse"
 
-    Orders:
-      description: OK
+    OrderResponseBadRequest:
+      description: Bad Request
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/Order"
+            $ref: "#/components/schemas/OrderResponse"
+          example:
+            message: "Bad Request"
 
-    OrderStatus:
+    OrderResponseNotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderResponse"
+          example:
+            message: "Not Found"
+
+    OrdersResponseOK:
       description: OK
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/OrderStatus"
+            $ref: "#/components/schemas/OrdersResponse"
+
+    OrdersResponseBadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrdersResponse"
+          example:
+            message: "Bad Request"
+
+    OrderStatusResponseOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderStatusResponse"
+
+    OrderStatusResponseNotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderStatusResponse"
+          example:
+            message: "Not Found"
 
     # Payment
-    Payment:
+    PaymentResponseOK:
       description: OK
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Payment"
+            $ref: "#/components/schemas/PaymentResponse"
 
-    PaymentFailed:
+    PaymentResponseBadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PaymentResponse"
+          example:
+            message: "Bad Request"
+
+    PaymentResponseFailed:
       description: Payment Required
       content:
-        text/plain:
-          example: Payment to order {{orderId}} has failed.
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PaymentResponse"
+          example:
+            message: "Payment Required"
 
-    PaymentConflict:
+    PaymentResponseConflict:
       description: Conflict
       content:
-        text/plain:
-          example: Order {{orderId}} is already paid.
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PaymentResponse"
+          example:
+            message: "Conflict"
 
     # Common
     EmptyOK:
       description: OK
       content:
         application/json:
-          example: {}
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
 
-    BadRequest:
+    EmptyBadRequest:
       description: Bad Request
       content:
-        text/plain:
-          example: "Bad request: (specific error message here)"
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
+          example:
+            message: "Bad Request"
 
-    NotFound:
+    EmptyNotFound:
       description: Not Found
       content:
-        text/plain:
-          example: "Not found: (specific error message here)"
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
+          example:
+            message: "Not Found"
 
   schemas:
     # Common
+    BaseResponse:
+      properties:
+        message:
+          readOnly: true
+          type: string
+          example: "OK"
+
     FareClass:
       description: This is the fare class, which is one of `Economy`, `PremiumEconomy`, `Business`, `First` and `All`, where `All` means query for all fare classes.
       type: string
@@ -815,7 +894,7 @@ components:
           type: string
           readOnly: true
           description: |
-            Creation date/time of the order in ISO 8601 format (UTC)
+            Creation date/time of the booking order in ISO 8601 format (UTC)
           format: date-time
         currency:
           type: string
@@ -845,17 +924,33 @@ components:
             $ref: "#/components/schemas/Passenger"
         extended:
           description: |
-            Extended data from client side to associate with this particular order. This is useful for storing some information later needs to be retrieved, such as client side order ID. The data is in form of `key:value` pairs. All data will be returned upon getting a order.
+            Extended data from client side to associate with this particular booking order. This is useful for storing some information later needs to be retrieved, such as client side order ID. The data is in form of `key:value` pairs. All data will be returned upon getting a booking order.
           type: object
           additionalProperties:
             type: string
             description: |
-              a custom value associated with this order
+              a custom value associated with this booking order
           example:
             clientsideOrderId: O1234
             clientsideCustomField1: A
             clientsideCustomField2: B
             clientsideCustomField3: C
+
+    OrderResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+      properties:
+        order:
+          $ref: "#/components/schemas/Order"
+
+    OrdersResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
 
     OrderStatus:
       properties:
@@ -863,10 +958,10 @@ components:
           description: |
             | status    | description                      |
             |-----------|----------------------------------|
-            |`pending`  | the order is to be paid          |
+            |`pending`  | the booking order is to be paid          |
             |`cancelled`| manually cancelled or timed out  |
-            |`completed`| paid order                       |
-            |`error`    | some error happened to the order |
+            |`completed`| paid booking order                       |
+            |`error`    | some error happened to the booking order |
 
           readOnly: true
           type: string
@@ -884,13 +979,20 @@ components:
         lastUpdated:
           readOnly: true
           description: |
-            Update date-time when order status ast last changed. It should be in ISO 8601 format (UTC).
+            Update date-time when booking order status ast last changed. It should be in ISO 8601 format (UTC).
           type: string
           format: date-time
 
+    OrderStatusResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+      properties:
+        orderStatus:
+          $ref: "#/components/schemas/OrderStatus"
+
     Customer:
       description: |
-        Customer information, including contact information for order related issues
+        Customer information, including contact information for booking order related issues
       allOf:
         - $ref: "#/components/schemas/Person"
         - properties:
@@ -1004,6 +1106,13 @@ components:
           example: 456.78
         creditCard:
           $ref: "#/components/schemas/CreditCard"
+
+    PaymentResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+      properties:
+        payment:
+          $ref: "#/components/schemas/Payment"
 
     CreditCard:
       writeOnly: true
