@@ -637,6 +637,10 @@ components:
           description: This value should be included in the polling later on.
           type: string
           example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+        message:
+          description: Message of the response
+          type: string
+          example: "Success"
 
     # Poll
     SearchResultPoll:
