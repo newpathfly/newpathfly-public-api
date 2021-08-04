@@ -68,17 +68,17 @@ tags:
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/SearchRequest" />
 
-  - name: SearchRequestSuccessful
+  - name: SearchResponse
     description: |
-      <SchemaDefinition schemaRef="#/components/schemas/SearchRequestSuccessful" />
+      <SchemaDefinition schemaRef="#/components/schemas/SearchResponse" />
 
   - name: SearchResultPoll
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/SearchResultPoll" />
 
-  - name: SearchResult
+  - name: PollResponse
     description: |
-      <SchemaDefinition schemaRef="#/components/schemas/SearchResult" />
+      <SchemaDefinition schemaRef="#/components/schemas/PollResponse" />
 
   - name: Query
     description: |
@@ -159,9 +159,9 @@ x-tagGroups:
   - name: Shopping Schemas
     tags:
       - SearchRequest
-      - SearchRequestSuccessful
+      - SearchResponse
       - SearchResultPoll
-      - SearchResult
+      - PollResponse
       - Query
       - Trip
       - Price
@@ -199,16 +199,9 @@ paths:
               $ref: "#/components/schemas/SearchRequest"
       responses:
         "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SearchRequestSuccessful"
+          $ref: "#/components/responses/SearchResponseOK"
         "400":
-          description: Bad Request
-          content:
-            text/plain:
-              example: invalid search request
+          $ref: "#/components/responses/SearchResponseBadRequest"
 
   /polls:
     post:
@@ -225,22 +218,11 @@ paths:
               $ref: "#/components/schemas/SearchResultPoll"
       responses:
         "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SearchResult"
+          $ref: "#/components/responses/PollResponseOK"
         "206":
-          description: Partial Content
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SearchResult"
+          $ref: "#/components/responses/PollResponsePartial"
         "400":
-          description: Bad Request
-          content:
-            text/plain:
-              example: Result cannot be returned to due bad request.
+          $ref: "#/components/responses/PollResponseBadRequest"
 
   # Order
   /orders:
@@ -479,6 +461,46 @@ components:
         default: 20
 
   responses:
+    # Search
+    SearchResponseOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchResponse"
+
+    SearchResponseBadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchResponse"
+          example:
+            message: "Bad Request"
+
+    PollResponseOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PollResponse"
+
+    PollResponsePartial:
+      description: Partial
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PollResponse"
+
+    PollResponseBadRequest:
+      description: BadRequest
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PollResponse"
+          example:
+            message: "Bad Request"
+
     # Order
     OrderResponseOK:
       description: OK
@@ -604,8 +626,9 @@ components:
       properties:
         message:
           readOnly: true
+          description: message returned by server side if there is any
           type: string
-          example: "OK"
+          example: ""
 
     FareClass:
       description: This is the fare class, which is one of `Economy`, `PremiumEconomy`, `Business`, `First` and `All`, where `All` means query for all fare classes.
@@ -709,18 +732,15 @@ components:
         fareClass:
           $ref: "#/components/schemas/FareClass"
 
-    SearchRequestSuccessful:
+    SearchResponse:
       description: This is the response when a `SearchRequest` is accepted.
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
       properties:
         requestId:
           description: This value should be included in the polling later on.
           type: string
           example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
-        message:
-          readOnly: true
-          description: Message of the response
-          type: string
-          example: "Success"
 
     # Poll
     SearchResultPoll:
@@ -751,14 +771,11 @@ components:
           example: USD
           default: USD
 
-    SearchResult:
+    PollResponse:
       description: This result contains up to the number of flight trips specified by `size` in the request.
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
       properties:
-        message:
-          description: This message contains the reason for a failed poll.
-          readOnly: true
-          type: string
-          example: Any error message goes here.
         currencyCode:
           description: This is the 3-letter currency code in which price is provided.
           type: string
