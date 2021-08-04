@@ -638,6 +638,7 @@ components:
           type: string
           example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
         message:
+          readOnly: true
           description: Message of the response
           type: string
           example: "Success"
@@ -676,6 +677,7 @@ components:
       properties:
         message:
           description: This message contains the reason for a failed poll.
+          readOnly: true
           type: string
           example: Any error message goes here.
         currencyCode:
