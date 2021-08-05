@@ -493,7 +493,7 @@ components:
             $ref: "#/components/schemas/PollResponse"
 
     PollResponseBadRequest:
-      description: BadRequest
+      description: Bad Request
       content:
         application/json:
           schema:
