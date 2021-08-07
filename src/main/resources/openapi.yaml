@@ -33,6 +33,8 @@ tags:
     description: |
       Search for virtual interlining offerings of cheapest flights.
 
+  # @todo - add Flight Verification
+
   - name: Booking
     description: |
       Place booking orders of virtually interlined flights.
@@ -376,6 +378,7 @@ components:
       required: true
       schema:
         type: string
+        description: UUID
         example: a7dd1cf6-dc96-490b-bdf6-8685dbf5bb87
 
     OrderStatus:
@@ -422,6 +425,7 @@ components:
       required: true
       schema:
         type: string
+        description: UUID
         example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
 
     # Common
@@ -905,6 +909,7 @@ components:
       properties:
         orderId:
           type: string
+          description: UUID
           readOnly: true
           example: a7dd1cf6-dc96-490b-bdf6-8685dbf5bb87
         createdAt:
@@ -992,6 +997,7 @@ components:
           readOnly: true
           nullable: true
           type: string
+          description: UUID
           example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
         lastUpdated:
           readOnly: true
@@ -1105,6 +1111,7 @@ components:
         paymentId:
           readOnly: true
           type: string
+          description: UUID
           example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
         createdAt:
           readOnly: true
@@ -1114,6 +1121,7 @@ components:
           format: date-time
         orderId:
           type: string
+          description: UUID
           example: a7dd1cf6-dc96-490b-bdf6-8685dbf5bb87
         currency:
           type: string
