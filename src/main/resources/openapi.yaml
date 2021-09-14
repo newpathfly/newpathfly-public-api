@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Virtual Interlining API
-  version: 2.3.5
+  version: 2.3.6
   description: |
     # Introduction
 
@@ -591,7 +591,7 @@ components:
           schema:
             $ref: "#/components/schemas/CheckResponse"
           example:
-            order:
+            check:
               checkId: 23246c8e-11ad-4105-845b-07ad855649c3
 
     CheckResponseBadRequest:
@@ -765,6 +765,11 @@ components:
       description: |
         A list of segment groups, where each segment group is a list of segments suggested to be placed within the same booking order.
       properties:
+        segmentGroupId:
+          type: string
+          description: UUID
+          readOnly: true
+          example: 1feefb95-7b9e-49e4-828c-b1844dd9d9ec
         depDate:
           description: This is the departure date in `YYYYMMDD` format.
           type: string
@@ -1111,7 +1116,7 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseResponse"
       properties:
-        order:
+        check:
           $ref: "#/components/schemas/Check"
 
     Order:
