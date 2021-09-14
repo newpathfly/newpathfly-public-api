@@ -591,7 +591,7 @@ components:
           schema:
             $ref: "#/components/schemas/CheckResponse"
           example:
-            order:
+            check:
               checkId: 23246c8e-11ad-4105-845b-07ad855649c3
 
     CheckResponseBadRequest:
@@ -1116,7 +1116,7 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseResponse"
       properties:
-        order:
+        check:
           $ref: "#/components/schemas/Check"
 
     Order:
