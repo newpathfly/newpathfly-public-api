@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Virtual Interlining API
-  version: 2.3.6
+  version: 2.3.7
   description: |
     # Introduction
 
@@ -741,7 +741,7 @@ components:
           example: ""
 
     FareClass:
-      description: This is the fare class, which is one of `Economy`, `PremiumEconomy`, `Business`, `First` and `All`, where `All` means query for all fare classes.
+      description: This is the fare class, which is one of `Economy`, `PremiumEconomy`, `Business` and `First`.
       type: string
       default: Economy
       enum:
@@ -749,7 +749,6 @@ components:
         - PremiumEconomy
         - Business
         - First
-        - All
 
     Flight:
       description: A flight is a pair of original departure to final destination.
