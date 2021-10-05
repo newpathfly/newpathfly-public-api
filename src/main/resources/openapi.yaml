@@ -865,7 +865,6 @@ components:
         arrDate:
           description: This is the arrival date in `YYYYMMDD` format.
           type: string
-          readOnly: true
           pattern: '^\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$'
           example: "20210401"
         arrTime:
