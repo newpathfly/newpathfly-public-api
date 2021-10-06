@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Virtual Interlining API
-  version: 2.3.7
+  version: 2.3.8
   description: |
     # Introduction
 
@@ -101,6 +101,18 @@ tags:
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Check" />
 
+  - name: CheckResponse
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/CheckResponse" />
+
+  - name: CheckStatus
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/CheckStatus" />
+
+  - name: CheckStatusResponse
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/CheckStatusResponse" />
+
   - name: Order
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/Order" />
@@ -178,6 +190,9 @@ x-tagGroups:
   - name: Booking Schemas
     tags:
       - Check
+      - CheckResponse
+      - CheckStatus
+      - CheckStatusResponse
       - Order
       - OrderResponse
       - OrdersResponse
@@ -237,13 +252,11 @@ paths:
   # booking
   /checks:
     post:
-      summary: Check for booking availability
+      summary: Create a booking check of specific flight
       description: |
-        Given a list of `segmentGroups` and information of `passengers`, a check response with an unique `checkId` will be returned.
-
-        If the `segmentGroups` are available for booking with respect to the information of `passengers`, the response will include `totalAmount` in particular `currency`.
-
-        If the system is unable to return with a booking availability in time, it will respond with a HTTP status code of `206 Partial`.
+        A specific flight contains a list of specific `segmentGroups` returned from flight search.
+        
+        Given a list of `segmentGroups` and information of `passengers`, a check request with an unique `checkId` will be returned.
 
         An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
 
@@ -258,20 +271,14 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/CheckResponseOK"
-        "206":
-          $ref: "#/components/responses/CheckResponsePartial"
         "400":
           $ref: "#/components/responses/CheckResponseBadRequest"
 
   /checks/{checkId}:
     get:
-      summary: Continue the checking for booking availability
+      summary: Retrieve information about a booking check
       description: |
-        Given a `checkId` previously returned, a check response with the same `checkId` will be returned.
-
-        If the `segmentGroups` are available for booking with respect to the information of `passengers`, the response will include `totalAmount` in particular `currency`.
-
-        If the system is unable to return with a booking availability in time, it will continue to respond with a HTTP status code of `206 Partial`.
+        Given a `checkId` previously returned, a check request with the same `checkId` will be returned.
 
         An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
 
@@ -283,10 +290,31 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/CheckResponseOK"
-        "206":
-          $ref: "#/components/responses/CheckResponsePartial"
         "404":
           $ref: "#/components/responses/CheckResponseNotFound"
+
+  /checks/{checkId}/status:
+    get:
+      summary: Retrieve the status of a booking check
+      description: |
+        The status of a booking check with specified `checkId` will be returned. 
+
+        If the `segmentGroups` from the check request are available for booking with respect to the information of `passengers`, the a success `checkStatus` of will be returned along with a `totalAmount` in particular `currency`.
+
+        For any reason for which the check failed, a error `checkStatus` will be returned.
+
+        > See response of `200 OK` for status definitions.
+
+      operationId: getCheckStatus
+      tags:
+        - Booking
+      parameters:
+        - $ref: "#/components/parameters/CheckId"
+      responses:
+        "200":
+          $ref: "#/components/responses/CheckStatusResponseOK"
+        "404":
+          $ref: "#/components/responses/CheckStatusResponseNotFound"
 
   /orders:
     post:
@@ -584,16 +612,6 @@ components:
           schema:
             $ref: "#/components/schemas/CheckResponse"
 
-    CheckResponsePartial:
-      description: Partial
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/CheckResponse"
-          example:
-            check:
-              checkId: 23246c8e-11ad-4105-845b-07ad855649c3
-
     CheckResponseBadRequest:
       description: Bad Request
       content:
@@ -609,6 +627,22 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/CheckResponse"
+          example:
+            message: "Not Found"
+
+    CheckStatusResponseOK:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CheckStatusResponse"
+
+    CheckStatusResponseNotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CheckStatusResponse"
           example:
             message: "Not Found"
 
@@ -831,7 +865,6 @@ components:
         arrDate:
           description: This is the arrival date in `YYYYMMDD` format.
           type: string
-          readOnly: true
           pattern: '^\d{4}(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$'
           example: "20210401"
         arrTime:
@@ -1118,6 +1151,36 @@ components:
         check:
           $ref: "#/components/schemas/Check"
 
+    CheckStatus:
+      properties:
+        status:
+          description: |
+            | status     | description               |
+            |------------|---------------------------|
+            |`pending`   | booking check in progress |
+            |`completed` | booking check succeeded   |
+            |`error`     | booking check error       |
+          readOnly: true
+          type: string
+          default: pending
+          enum:
+            - pending
+            - completed
+            - error
+        lastUpdated:
+          readOnly: true
+          description: |
+            Update date-time when check status was last changed. It should be in ISO 8601 format (UTC).
+          type: string
+          format: date-time
+
+    CheckStatusResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+      properties:
+        checkStatus:
+          $ref: "#/components/schemas/CheckStatus"
+
     Order:
       required:
         - checkId
@@ -1184,7 +1247,7 @@ components:
             | status    | description                              |
             |-----------|------------------------------------------|
             |`creating` | the booking order is getting created     |
-            |`ready`  | the booking order is to be paid          |
+            |`ready`    | the booking order is to be paid          |
             |`cancelled`| manually cancelled or timed out          |
             |`completed`| paid booking order                       |
             |`error`    | some error happened to the booking order |
@@ -1207,7 +1270,7 @@ components:
         lastUpdated:
           readOnly: true
           description: |
-            Update date-time when booking order status ast last changed. It should be in ISO 8601 format (UTC).
+            Update date-time when booking order status was last changed. It should be in ISO 8601 format (UTC).
           type: string
           format: date-time
 
