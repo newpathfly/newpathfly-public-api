@@ -1117,6 +1117,18 @@ components:
           description: UUID
           readOnly: true
           example: 23246c8e-11ad-4105-845b-07ad855649c3
+        currency:
+          type: string
+          readOnly: true
+          description: |
+            3-letter currency code in ISO 4217 format
+          example: EUR
+        totalAmount:
+          type: number
+          readOnly: true
+          description: |
+            Total price amount of all passengers for the flight, including tax and miscellaneous fees.
+          example: 456.78
         segmentGroups:
           type: array
           description: |
@@ -1155,18 +1167,6 @@ components:
             - pending
             - success
             - error
-        currency:
-          type: string
-          readOnly: true
-          description: |
-            3-letter currency code in ISO 4217 format
-          example: EUR
-        totalAmount:
-          type: number
-          readOnly: true
-          description: |
-            Total price amount of all passengers for the flight, including tax and miscellaneous fees.
-          example: 456.78
         lastUpdated:
           readOnly: true
           description: |
