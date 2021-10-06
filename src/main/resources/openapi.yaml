@@ -1155,11 +1155,11 @@ components:
       properties:
         status:
           description: |
-            | status   | description       |
-            |----------|-------------------|
-            |`pending` | check in progress |
-            |`success` | check succeeded   |
-            |`error`   | check error       |
+            | status   | description               |
+            |----------|---------------------------|
+            |`pending` | booking check in progress |
+            |`success` | booking check succeeded   |
+            |`error`   | booking check error       |
           readOnly: true
           type: string
           default: pending
