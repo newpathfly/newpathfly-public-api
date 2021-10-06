@@ -1155,17 +1155,17 @@ components:
       properties:
         status:
           description: |
-            | status   | description               |
-            |----------|---------------------------|
-            |`pending` | booking check in progress |
-            |`success` | booking check succeeded   |
-            |`error`   | booking check error       |
+            | status     | description               |
+            |------------|---------------------------|
+            |`pending`   | booking check in progress |
+            |`completed` | booking check succeeded   |
+            |`error`     | booking check error       |
           readOnly: true
           type: string
           default: pending
           enum:
             - pending
-            - success
+            - completed
             - error
         lastUpdated:
           readOnly: true
