@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Virtual Interlining API
-  version: 2.4.0
+  version: 2.4.1
   description: |
     This API specification can be downloaded in [OpenAPI](https://openapis.org) format. Many [code generator tools](https://openapi-generator.tech/docs/generators) are available to generate client code in different programming languages based on the specification file.
 
@@ -1048,16 +1048,19 @@ components:
           items:
             $ref: "#/components/schemas/SegmentGroup"
         prices:
-          description: This is a map between each price type and the actual pricing information. `ADT`, `CHD` and `INF` correspond to each individual passenger type. `ALL` corresponds to all passengers. The total price in `ALL` should equal to `ADT` * `adultAmount` + `CHD` * `childAmount` + `INF` * `infantAmount`.
-          properties:
-            ADT:
-              $ref: "#/components/schemas/Price"
-            CHD:
-              $ref: "#/components/schemas/Price"
-            INF:
-              $ref: "#/components/schemas/Price"
-            ALL:
-              $ref: "#/components/schemas/Price"
+          $ref: "#/components/schemas/Prices"
+
+    Prices:
+      description: This is a map between each price type and the actual pricing information. `ADT`, `CHD` and `INF` correspond to each individual passenger type. `ALL` corresponds to all passengers. The total price in `ALL` should equal to `ADT` * `adultAmount` + `CHD` * `childAmount` + `INF` * `infantAmount`.
+      properties:
+        ADT:
+          $ref: "#/components/schemas/Price"
+        CHD:
+          $ref: "#/components/schemas/Price"
+        INF:
+          $ref: "#/components/schemas/Price"
+        ALL:
+          $ref: "#/components/schemas/Price"
 
     Price:
       description: This is the pricing information including `price`, `tax` and `totalPrice`.
