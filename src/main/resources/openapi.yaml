@@ -3,16 +3,6 @@ info:
   title: Virtual Interlining API
   version: 2.4.0
   description: |
-    # Introduction
-
-    ## What is Virtual Interlining?
-    ​
-    Interlining is an airline-industry-specific term. Carriers come to an agreement with others, or join an alliance, and then passengers can fly to their destination using all of those airlines in agreement. 
-
-    Virtual interlining is where the technology behind the scenes organizes the means for passengers to travel on multiple carriers on a single itinerary even without an agreement. Our virtual interlining technology not only gives your more content in addition to GDS, it also gives contents with more competitive pricing.
-
-    ## OpenAPI specification
-
     This API specification can be downloaded in [OpenAPI](https://openapis.org) format. Many [code generator tools](https://openapi-generator.tech/docs/generators) are available to generate client code in different programming languages based on the specification file.
 
     For example, to generate client code in Java, run following command.
@@ -20,6 +10,16 @@ info:
     ```text
     openapi-generator-cli generate -g java -o newpathfly -i openapi.yaml
     ```
+
+    > A SDK has been prebuilt for Java based projects. See [here](https://github.com/newpathfly/newpathfly-public-sdk) for more details.
+
+    # Introduction
+
+    ## What is Virtual Interlining?
+    ​
+    Interlining is an airline-industry-specific term. Carriers come to an agreement with others, or join an alliance, and then passengers can fly to their destination using all of those airlines in agreement. 
+
+    Virtual interlining is where the technology behind the scenes organizes the means for passengers to travel on multiple carriers on a single itinerary even without an agreement. Our virtual interlining technology not only gives your more content in addition to GDS, it also gives contents with more competitive pricing.
 
   contact:
     name: newpathfly
