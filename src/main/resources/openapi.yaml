@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Virtual Interlining API
-  version: 2.3.8
+  version: 2.4.0
   description: |
     # Introduction
 
@@ -25,8 +25,8 @@ info:
     name: newpathfly
 
 servers:
-  - url: http://uat-api.newpathfly.com/v1
-  - url: http://api.newpathfly.com/v1
+  - url: http://uat-api.newpathfly.com/v2
+  - url: http://api.newpathfly.com/v2
 
 tags:
   - name: Shopping
@@ -210,7 +210,7 @@ x-tagGroups:
 
 paths:
   # Shopping
-  /searches:
+  /shopping/searches:
     post:
       summary: Create a search request
       description: A `requestId` will be returned given a valid search request. This `requestId` is required for polling for search results later on.
@@ -228,7 +228,7 @@ paths:
         "400":
           $ref: "#/components/responses/SearchResponseBadRequest"
 
-  /polls:
+  /shopping/polls:
     post:
       summary: Poll for search results
       description: |
@@ -250,7 +250,7 @@ paths:
           $ref: "#/components/responses/PollResponseBadRequest"
 
   # booking
-  /checks:
+  /booking/checks:
     post:
       summary: Create a booking check of specific flight
       description: |
@@ -274,7 +274,7 @@ paths:
         "400":
           $ref: "#/components/responses/CheckResponseBadRequest"
 
-  /checks/{checkId}:
+  /booking/checks/{checkId}:
     get:
       summary: Retrieve information about a booking check
       description: |
@@ -293,7 +293,7 @@ paths:
         "404":
           $ref: "#/components/responses/CheckResponseNotFound"
 
-  /checks/{checkId}/status:
+  /booking/checks/{checkId}/status:
     get:
       summary: Retrieve the status of a booking check
       description: |
@@ -316,7 +316,7 @@ paths:
         "404":
           $ref: "#/components/responses/CheckStatusResponseNotFound"
 
-  /orders:
+  /booking/orders:
     post:
       summary: Create a booking order of specific flight
       description: |
@@ -361,7 +361,7 @@ paths:
         "400":
           $ref: "#/components/responses/OrdersResponseBadRequest"
 
-  /orders/{orderId}:
+  /booking/orders/{orderId}:
     get:
       summary: Retrieve information about a booking order
       description: |
@@ -399,7 +399,7 @@ paths:
         "404":
           $ref: "#/components/responses/EmptyNotFound"
 
-  /orders/{orderId}/status:
+  /booking/orders/{orderId}/status:
     get:
       summary: Retrieve the status of a booking order
       description: |
@@ -419,7 +419,7 @@ paths:
           $ref: "#/components/responses/OrderStatusResponseNotFound"
 
   # Payment
-  /payments:
+  /booking/payments:
     post:
       summary: Make a payment to a booking order recently placed
       description: |
@@ -442,7 +442,7 @@ paths:
         "409":
           $ref: "#/components/responses/PaymentResponseConflict"
 
-  /payments/{paymentId}:
+  /booking/payments/{paymentId}:
     get:
       summary: Retrieve information about a payment
       description: |
@@ -1017,7 +1017,7 @@ components:
           type: string
           minLength: 0
           maxLength: 3
-          example: CGN
+          example: PAR
         arrAirport:
           description: This is the arrival airport specified using its IATA code.
           type: string
