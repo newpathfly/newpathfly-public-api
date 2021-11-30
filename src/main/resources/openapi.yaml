@@ -273,14 +273,20 @@ paths:
 
         Unlike regular poll above, incremental poll returns results based on flights previously selected by client. It can provide a better experience for the client by making incremental choices.
 
+        Before the `IncrementalPollResponse` of entire `Trip`, which is a `Trip` that includes all `Flight` records, is returned,
+
+        - `segmentGroups` will be empty, because it is not ready for booking.
+
+        - `prices` will be the lowest of all `Trip` records matching the selected `Flight` records.
+
         For example,
 
         >
-        > To search for a round-trip, in other words, a `trip` of an departure `flight` and a return `flight`,
+        > To search for a round-trip, in other words, a `Trip` of an departure `Flight` and a return `Flight`,
         > 
-        > - First call to this endpoint without any `flightKey` would result in a list of `trip` records with only an outbound `flight` in each.
+        > - First call to this endpoint without any `flightKey` would result in a list of `Trip` records with only an outbound `Flight` in each.
         >
-        > - Secong call to this endpoint with the `flightKey` of a selected outbound `flight`, would result in a list of `trip` records with both `flight` records in each, which forms a round-trip.
+        > - Secong call to this endpoint with the `flightKey` of a selected outbound `Flight`, would result in a list of `Trip` records with both `Flight` records in each, which forms a round-trip.
         >
 
         Corresponding response status code indicates whether another poll is neccessary until results are returned.
@@ -1224,17 +1230,18 @@ components:
           example: "20210401"
 
     Trip:
-      description: A trip is one complete travel. It can be one-way trip or a round trip, depending on the number of included flights.
+      description: A `Trip` is one complete travel. It can be one-way `Trip` or a round `Trip`, depending on the number of included `Flight` records.
       properties:
         flights:
-          description: A one-way trip consists of one flight. A round-trip consists of two flights going forth and back between two places.
+          description: A one-way `Trip` consists of one `Flight`. A round `Trip` consists of a departure `Flight` and a returning `Flight`.
           type: array
           minItems: 1
           items:
             $ref: "#/components/schemas/Flight"
         segmentGroups:
           description: |
-            A list of segment groups, where each segment group is a list of segments suggested to be placed within the same booking order.
+            A list of `SegmentGroup` records, where each `SegmentGroup` is a list of `Segment` records suggested to be placed within the same booking order.
+
           type: array
           readOnly: true
           minItems: 1
