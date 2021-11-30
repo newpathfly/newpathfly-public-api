@@ -225,7 +225,7 @@ paths:
       summary: Create a search request
       description: |
         A `SearchResponse` including a `requestId` will be returned given a valid `SearchRequest`.
-        
+
         This `requestId` is required for polling for results later on.
       operationId: createSearch
       tags:
@@ -246,7 +246,7 @@ paths:
       summary: Poll for search results
       description: |
         A `PollResponse` including full or partial search results will be returned, given a valid `PollRequest` including a `requestId`.
-        
+
         Corresponding response status code indicates whether another poll is neccessary until all results are returned.
       operationId: createPoll
       tags:
@@ -309,11 +309,11 @@ paths:
         A `CheckResponse` with an unique `checkId` will be returned, given a `Check` including a list of `segmentGroups` and information of `passengers`.
 
         The list of `segmentGroups` should come from a specific `Trip` included in a `PollResponse`.
-        
+
         An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking.
-        
+
         For example,
-        
+
         > It is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
 
       operationId: createCheck
@@ -642,7 +642,7 @@ components:
             message: "Bad Request"
 
     PollResponseOK:
-      description: | 
+      description: |
         OK
         >
         > All have been returned. There is no more result available.
@@ -1132,7 +1132,7 @@ components:
             $ref: "#/components/schemas/Trip"
 
     IncrementalPollRequest:
-      description: | 
+      description: |
         @todo
       required:
         - requestId
