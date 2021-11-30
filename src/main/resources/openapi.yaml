@@ -76,13 +76,21 @@ tags:
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/SearchResponse" />
 
-  - name: SearchResultPoll
+  - name: PollRequest
     description: |
-      <SchemaDefinition schemaRef="#/components/schemas/SearchResultPoll" />
+      <SchemaDefinition schemaRef="#/components/schemas/PollRequest" />
 
   - name: PollResponse
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/PollResponse" />
+
+  - name: IncrementalPollRequest (BETA)
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/IncrementalPollRequest" />
+
+  - name: IncrementalPollResponse (BETA)
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/IncrementalPollResponse" />
 
   - name: Query
     description: |
@@ -181,8 +189,10 @@ x-tagGroups:
     tags:
       - SearchRequest
       - SearchResponse
-      - SearchResultPoll
+      - PollRequest
       - PollResponse
+      - IncrementalPollRequest (BETA)
+      - IncrementalPollResponse (BETA)
       - Query
       - Trip
       - Price
@@ -232,7 +242,9 @@ paths:
     post:
       summary: Poll for search results
       description: |
-        Given a `requestId` obtained from search, corresponding search results will be returned in full (NOT incremental). Different response status code indicates whether another poll is neccessary until entire full results are returned.
+        Given a `requestId` obtained from search, corresponding search results will be returned.
+        
+        Corresponding response status code indicates whether another poll is neccessary until all results are returned.
       operationId: createPoll
       tags:
         - Shopping
@@ -240,7 +252,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SearchResultPoll"
+              $ref: "#/components/schemas/PollRequest"
       responses:
         "200":
           $ref: "#/components/responses/PollResponseOK"
@@ -248,6 +260,41 @@ paths:
           $ref: "#/components/responses/PollResponsePartial"
         "400":
           $ref: "#/components/responses/PollResponseBadRequest"
+
+  /shopping/incrementalpolls:
+    post:
+      summary: Incremental poll for search results (BETA)
+      description: |
+
+        Given a `requestId` obtained from search, plus zero or more `flightKey` values for selected flights, corresponding search results will be returned.
+
+        Unlike regular poll above, incremental poll returns result based on flights previously selected by client. This can help provide a better experience for the client by making choices incrementally.
+
+        For example,
+        
+        > For a round trip, or a `trip` of two `flight` records,
+        > 
+        > - First call to this endpoint would result in a list of `trip` records with 1 `flight` in each.
+        >
+        > - Secong call to this endpoint with the `flightKey` of a selected `flight` from first call, would result in a list of `trip` records with 2 `flight` records in each, which forms a round trip.
+        
+        Corresponding response status code indicates whether another poll is neccessary until results are returned.
+
+      operationId: createIncrementalPoll
+      tags:
+        - Shopping
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncrementalPollRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/IncrementalPollResponseOK"
+        "206":
+          $ref: "#/components/responses/IncrementalPollResponsePartial"
+        "400":
+          $ref: "#/components/responses/IncrementalPollResponseBadRequest"
 
   # booking
   /booking/checks:
@@ -566,14 +613,18 @@ components:
   responses:
     # Search
     SearchResponseOK:
-      description: OK
+      description: |
+        OK
+        > @todo
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/SearchResponse"
 
     SearchResponseBadRequest:
-      description: Bad Request
+      description: |
+        Bad Request
+        > @todo
       content:
         application/json:
           schema:
@@ -582,21 +633,28 @@ components:
             message: "Bad Request"
 
     PollResponseOK:
-      description: OK
+      description: | 
+        OK
+        > @todo
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PollResponse"
 
     PollResponsePartial:
-      description: Partial
+      description: |
+        Partial
+        > @todo
+
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PollResponse"
 
     PollResponseBadRequest:
-      description: Bad Request
+      description: |
+        Bad Request
+        > @todo
       content:
         application/json:
           schema:
@@ -604,16 +662,50 @@ components:
           example:
             message: "Bad Request"
 
+    IncrementalPollResponseOK:
+      description: | 
+        OK
+        > @todo
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/IncrementalPollResponse"
+
+    IncrementalPollResponsePartial:
+      description: |
+        Partial
+        > @todo
+
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/IncrementalPollResponse"
+
+    IncrementalPollResponseBadRequest:
+      description: |
+        Bad Request
+        > @todo
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/IncrementalPollResponse"
+          example:
+            message: "Bad Request"
+
     # Booking
     CheckResponseOK:
-      description: OK
+      description: |
+        OK
+        > @todo
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/CheckResponse"
 
     CheckResponseBadRequest:
-      description: Bad Request
+      description: |
+        Bad Request
+        > @todo
       content:
         application/json:
           schema:
@@ -622,7 +714,9 @@ components:
             message: "Bad Request"
 
     CheckResponseNotFound:
-      description: Not Found
+      description: |
+        Not Found
+        > @todo
       content:
         application/json:
           schema:
@@ -631,14 +725,18 @@ components:
             message: "Not Found"
 
     CheckStatusResponseOK:
-      description: OK
+      description: |
+        OK
+        > @todo
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/CheckStatusResponse"
 
     CheckStatusResponseNotFound:
-      description: Not Found
+      description: |
+        Not Found
+        > @todo
       content:
         application/json:
           schema:
@@ -647,14 +745,18 @@ components:
             message: "Not Found"
 
     OrderResponseOK:
-      description: OK
+      description: |
+        OK
+        > @todo
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderResponse"
 
     OrderResponseBadRequest:
-      description: Bad Request
+      description: |
+        Bad Request
+        > @todo
       content:
         application/json:
           schema:
@@ -663,7 +765,9 @@ components:
             message: "Bad Request"
 
     OrderResponseNotFound:
-      description: Not Found
+      description: |
+        Not Found
+        > @todo
       content:
         application/json:
           schema:
@@ -672,14 +776,18 @@ components:
             message: "Not Found"
 
     OrdersResponseOK:
-      description: OK
+      description: |
+        OK
+        > @todo
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrdersResponse"
 
     OrdersResponseBadRequest:
-      description: Bad Request
+      description: |
+        Bad Request
+        > @todo
       content:
         application/json:
           schema:
@@ -688,14 +796,18 @@ components:
             message: "Bad Request"
 
     OrderStatusResponseOK:
-      description: OK
+      description: |
+        OK
+        > @todo
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderStatusResponse"
 
     OrderStatusResponseNotFound:
-      description: Not Found
+      description: |
+        Not Found
+        > @todo
       content:
         application/json:
           schema:
@@ -705,14 +817,18 @@ components:
 
     # Payment
     PaymentResponseOK:
-      description: OK
+      description: |
+        OK
+        > @todo
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PaymentResponse"
 
     PaymentResponseBadRequest:
-      description: Bad Request
+      description: |
+        Bad Request
+        > @todo
       content:
         application/json:
           schema:
@@ -721,7 +837,9 @@ components:
             message: "Bad Request"
 
     PaymentResponseFailed:
-      description: Payment Required
+      description: |
+        Payment Required
+        > @todo
       content:
         application/json:
           schema:
@@ -730,7 +848,9 @@ components:
             message: "Payment Required"
 
     PaymentResponseConflict:
-      description: Conflict
+      description: |
+        Conflict
+        > @todo
       content:
         application/json:
           schema:
@@ -787,6 +907,10 @@ components:
     Flight:
       description: A flight is a pair of original departure to final destination.
       properties:
+        flightKey:
+          description: A unique string generated for the flight
+          type: string
+          example: 20211128:1740:HEL:CPH:AY959-20211129:1100:CPH:BCN:VY1871-20211129:1850:BCN:CDG:VY8240
         segments:
           description: A flight consists of one or more segments. For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
           type: array
@@ -945,8 +1069,11 @@ components:
           example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
 
     # Poll
-    SearchResultPoll:
-      description: This is the payload to be sent when calling `/polls` endpoint. The virtual interlining engine will mostly likely keep generating results at the backend, so stop calling this endpoint when number of results is good enough as a general practice.
+    PollRequest:
+      description: |
+        This is the payload to be sent when calling `/polls` endpoint.
+        
+        > The virtual interlining engine will mostly likely keep generating results at the backend, so stop calling this endpoint when number of results is good enough as a general practice.
       required:
         - requestId
       properties:
@@ -974,6 +1101,64 @@ components:
           default: USD
 
     PollResponse:
+      description: This result contains up to the number of flight trips specified by `size` in the request.
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+      properties:
+        currencyCode:
+          description: This is the 3-letter currency code in which price is provided.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: EUR
+        trips:
+          description: This is a list of trips based on `queries` and `TripType` in the corresponding `SearchRequest`.
+          type: array
+          items:
+            $ref: "#/components/schemas/Trip"
+
+    IncrementalPollRequest:
+      description: | 
+        This is the payload to be sent when calling `/incrementalpolls` endpoint.
+
+        @todo
+
+        > The virtual interlining engine will mostly likely keep generating results at the backend, so stop calling this endpoint when number of results is good enough as a general practice.
+
+      required:
+        - requestId
+      properties:
+        requestId:
+          description: This is the request ID for which to be polled.
+          type: string
+          example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+        flightKeys:
+          description: This is a list of `flightKey` values corresponding to the flights selected from the trip in a previous `incrementalPollResponse`.
+          type: array
+          items:
+            description: add something here @todo
+            type: string
+            example: 20211128:1740:HEL:CPH:AY959-20211129:1100:CPH:BCN:VY1871-20211129:1850:BCN:CDG:VY8240
+        offset:
+          description: This is the offset of the results to be polled next.
+          type: integer
+          minimum: 0
+          default: 100
+        size:
+          description: This is the maximum number of results to be polled. The actual number of results might be less when there is no more results available at the moment.
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+        currency:
+          description: Currency code of results to be polled.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: USD
+          default: USD
+
+    IncrementalPollResponse:
       description: This result contains up to the number of flight trips specified by `size` in the request.
       allOf:
         - $ref: "#/components/schemas/BaseResponse"
