@@ -223,7 +223,10 @@ paths:
   /shopping/searches:
     post:
       summary: Create a search request
-      description: A `requestId` will be returned given a valid search request. This `requestId` is required for polling for search results later on.
+      description: |
+        A `SearchResponse` including a `requestId` will be returned given a valid `SearchRequest`.
+        
+        This `requestId` is required for polling for results later on.
       operationId: createSearch
       tags:
         - Shopping
@@ -242,7 +245,7 @@ paths:
     post:
       summary: Poll for search results
       description: |
-        Given a `requestId` obtained from search, corresponding search results will be returned.
+        A `PollResponse` including full or partial search results will be returned, given a valid `PollRequest` including a `requestId`.
         
         Corresponding response status code indicates whether another poll is neccessary until all results are returned.
       operationId: createPoll
@@ -266,18 +269,20 @@ paths:
       summary: Incremental poll for search results (BETA)
       description: |
 
-        Given a `requestId` obtained from search, plus zero or more `flightKey` values for selected flights, corresponding search results will be returned.
+        A `IncrementalPollResponse` will be returned, given a `IncrementalPollRequest` including a `requestId`, and zero or more `flightKey` values corresponding to zero or more selected flights from previous `IncrementalPollResponse` if applicable.
 
-        Unlike regular poll above, incremental poll returns result based on flights previously selected by client. This can help provide a better experience for the client by making choices incrementally.
+        Unlike regular poll above, incremental poll returns results based on flights previously selected by client. It can provide a better experience for the client by making incremental choices.
 
         For example,
-        
-        > For a round trip, or a `trip` of two `flight` records,
-        > 
-        > - First call to this endpoint would result in a list of `trip` records with 1 `flight` in each.
+
         >
-        > - Secong call to this endpoint with the `flightKey` of a selected `flight` from first call, would result in a list of `trip` records with 2 `flight` records in each, which forms a round trip.
-        
+        > To search for a round-trip, in other words, a `trip` of an departure `flight` and a return `flight`,
+        > 
+        > - First call to this endpoint without any `flightKey` would result in a list of `trip` records with only an outbound `flight` in each.
+        >
+        > - Secong call to this endpoint with the `flightKey` of a selected outbound `flight`, would result in a list of `trip` records with both `flight` records in each, which forms a round-trip.
+        >
+
         Corresponding response status code indicates whether another poll is neccessary until results are returned.
 
       operationId: createIncrementalPoll
@@ -299,13 +304,17 @@ paths:
   # booking
   /booking/checks:
     post:
-      summary: Create a booking check of specific flight
+      summary: Create a booking check of specific trip
       description: |
-        A specific flight contains a list of specific `segmentGroups` returned from flight search.
-        
-        Given a list of `segmentGroups` and information of `passengers`, a check request with an unique `checkId` will be returned.
+        A `CheckResponse` with an unique `checkId` will be returned, given a `Check` including a list of `segmentGroups` and information of `passengers`.
 
-        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
+        The list of `segmentGroups` should come from a specific `Trip` included in a `PollResponse`.
+        
+        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking.
+        
+        For example,
+        
+        > It is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
 
       operationId: createCheck
       tags:
@@ -325,7 +334,7 @@ paths:
     get:
       summary: Retrieve information about a booking check
       description: |
-        Given a `checkId` previously returned, a check request with the same `checkId` will be returned.
+        Given a `checkId` previously returned, a check request with the same `checkId` will be returned. (@todo - be explicit about the Request/Response schema)
 
         An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
 
@@ -344,7 +353,7 @@ paths:
     get:
       summary: Retrieve the status of a booking check
       description: |
-        The status of a booking check with specified `checkId` will be returned. 
+        The status of a booking check with specified `checkId` will be returned.  (@todo - be explicit about the Request/Response schema)
 
         If the `segmentGroups` from the check request are available for booking with respect to the information of `passengers`, the a success `checkStatus` of will be returned along with a `totalAmount` in particular `currency`.
 
@@ -367,7 +376,7 @@ paths:
     post:
       summary: Create a booking order of specific flight
       description: |
-        Given a unique `checkId` previously returned, and information of `customer` and `passengers`, a booking order with an unique `orderId` will be returned along with `totalAmount` in particular `currency`.
+        Given a unique `checkId` previously returned, and information of `customer` and `passengers`, a booking order with an unique `orderId` will be returned along with `totalAmount` in particular `currency`. (@todo - be explicit about the Request/Response schema)
 
         An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
       operationId: createOrder
@@ -387,7 +396,7 @@ paths:
     get:
       summary: Retrieve one or more booking orders
       description: |
-        Given one or more criteria in the query string, one or more matching booking orders will be returned.
+        Given one or more criteria in the query string, one or more matching booking orders will be returned. (@todo - be explicit about the Request/Response schema)
 
         Results will also be paged based on `offset` and `size`.
       operationId: getOrders
@@ -412,7 +421,7 @@ paths:
     get:
       summary: Retrieve information about a booking order
       description: |
-        A booking order with specified `orderId` will be returned.
+        A booking order with specified `orderId` will be returned. (@todo - be explicit about the Request/Response schema)
       operationId: getOrder
       tags:
         - Booking
@@ -427,7 +436,7 @@ paths:
     delete:
       summary: Cancel a booking order that is neither cancelled nor completed
       description: |
-        The booking order with specified `orderId` will be cancelled, if its status is neither `cancelled` nor `completed`.
+        The booking order with specified `orderId` will be cancelled, if its status is neither `cancelled` nor `completed`. (@todo - be explicit about the Request/Response schema)
 
         > IMPORTANT:
         >
@@ -450,7 +459,7 @@ paths:
     get:
       summary: Retrieve the status of a booking order
       description: |
-        The status of a booking order with specified `orderId` will be returned. 
+        The status of a booking order with specified `orderId` will be returned. (@todo - be explicit about the Request/Response schema)
 
         > See response of `200 OK` for status definitions.
 
@@ -470,7 +479,7 @@ paths:
     post:
       summary: Make a payment to a booking order recently placed
       description: |
-        Given the `orderId`, `totalAmount` in specific `currency` along with `creditCard` information, a payment with an unique `paymentId` will be made and returned.
+        Given the `orderId`, `totalAmount` in specific `currency` along with `creditCard` information, a payment with an unique `paymentId` will be made and returned. (@todo - be explicit about the Request/Response schema)
       operationId: createPayment
       tags:
         - Payments
@@ -493,7 +502,7 @@ paths:
     get:
       summary: Retrieve information about a payment
       description: |
-        Given a `paymentId`, information about the corresponding payment will be returned.
+        Given a `paymentId`, information about the corresponding payment will be returned. (@todo - be explicit about the Request/Response schema)
       operationId: getPayment
       tags:
         - Payments
@@ -635,7 +644,8 @@ components:
     PollResponseOK:
       description: | 
         OK
-        > @todo
+        >
+        > All have been returned. There is no more result available.
       content:
         application/json:
           schema:
@@ -644,8 +654,8 @@ components:
     PollResponsePartial:
       description: |
         Partial
-        > @todo
-
+        >
+        > There are more results available to be polled for the same `PollRequest`.
       content:
         application/json:
           schema:
@@ -653,8 +663,9 @@ components:
 
     PollResponseBadRequest:
       description: |
-        Bad Request
-        > @todo
+        Partial
+        >
+        > There are more results available to be polled for the same `PollRequest`.
       content:
         application/json:
           schema:
@@ -663,9 +674,12 @@ components:
             message: "Bad Request"
 
     IncrementalPollResponseOK:
-      description: | 
+      description: |
         OK
-        > @todo
+        >
+        > This is the last `IncrementalPollResponse` for the current `IncrementalPollRequest`. There is no more available.
+        >
+        > (If a non-existing `requestId` or `flightKey` was provided, a `IncrementalPollResponse` with empty result set will be returned.)
       content:
         application/json:
           schema:
@@ -674,8 +688,8 @@ components:
     IncrementalPollResponsePartial:
       description: |
         Partial
-        > @todo
-
+        >
+        > This is a `IncrementalPollResponse` for the same `IncrementalPollRequest`. There are more available.
       content:
         application/json:
           schema:
@@ -684,7 +698,8 @@ components:
     IncrementalPollResponseBadRequest:
       description: |
         Bad Request
-        > @todo
+        >
+        > Check if anything incorrect or missing in the `IncrementalPollRequest`.
       content:
         application/json:
           schema:
@@ -1030,7 +1045,8 @@ components:
 
     # Search Request
     SearchRequest:
-      description: This is the payload to be sent when calling `/searches` endpoint.
+      description: |
+        @todo
       required:
         - queries
         - adultAmount
@@ -1066,21 +1082,19 @@ components:
         requestId:
           description: This value should be included in the polling later on.
           type: string
-          example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+          example: OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS
 
     # Poll
     PollRequest:
       description: |
-        This is the payload to be sent when calling `/polls` endpoint.
-        
-        > The virtual interlining engine will mostly likely keep generating results at the backend, so stop calling this endpoint when number of results is good enough as a general practice.
+        @todo
       required:
         - requestId
       properties:
         requestId:
-          description: This is the request ID for which to be polled.
+          description: This is the request ID found in the `SearchResponse`.
           type: string
-          example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+          example: OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS
         offset:
           description: This is the offset of the results to be polled next.
           type: integer
@@ -1119,24 +1133,18 @@ components:
 
     IncrementalPollRequest:
       description: | 
-        This is the payload to be sent when calling `/incrementalpolls` endpoint.
-
         @todo
-
-        > The virtual interlining engine will mostly likely keep generating results at the backend, so stop calling this endpoint when number of results is good enough as a general practice.
-
       required:
         - requestId
       properties:
         requestId:
-          description: This is the request ID for which to be polled.
+          description: This is the request ID found in the `SearchResponse`.
           type: string
-          example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+          example: OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS
         flightKeys:
-          description: This is a list of `flightKey` values corresponding to the flights selected from the trip in a previous `incrementalPollResponse`.
+          description: This is a list of zero or more `flightKey` values corresponding to zero or more flights selected from a trip in the previous `IncrementalPollResponse`.
           type: array
           items:
-            description: add something here @todo
             type: string
             example: 20211128:1740:HEL:CPH:AY959-20211129:1100:CPH:BCN:VY1871-20211129:1850:BCN:CDG:VY8240
         offset:
