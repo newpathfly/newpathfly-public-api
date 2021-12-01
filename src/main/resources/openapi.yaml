@@ -1,17 +1,17 @@
 openapi: 3.0.3
 info:
   title: Virtual Interlining API
-  version: 2.4.1
+  version: 2.5.0
   description: |
     This API specification can be downloaded in [OpenAPI](https://openapis.org) format. Many [code generator tools](https://openapi-generator.tech/docs/generators) are available to generate client code in different programming languages based on the specification file.
 
-    For example, to generate client code in Java, run following command.
+    > For example, to generate client code in Java, run following command.
+    > 
+    > ```
+    > openapi-generator-cli generate -g java -o newpathfly -i openapi.yaml
+    > ```
 
-    ```text
-    openapi-generator-cli generate -g java -o newpathfly -i openapi.yaml
-    ```
-
-    > A SDK has been prebuilt for Java based projects. See [here](https://github.com/newpathfly/newpathfly-public-sdk) for more details.
+    A SDK has been prebuilt for Java based projects. See [here](https://github.com/newpathfly/newpathfly-public-sdk) for more details.
 
     # Introduction
 
@@ -276,13 +276,10 @@ paths:
         Before the `IncrementalPollResponse` of entire `Trip`, which is a `Trip` that includes all `Flight` records, is returned,
 
         - `segmentGroups` will be empty, because it is not ready for booking.
-
         - `prices` will be the lowest of all `Trip` records matching the selected `Flight` records.
 
-        For example,
-
         >
-        > To search for a round-trip, in other words, a `Trip` of an departure `Flight` and a return `Flight`,
+        > For example, to search for a round-trip, in other words, a `Trip` of an departure `Flight` and a return `Flight`,
         > 
         > - First call to this endpoint without any `flightKey` would result in a list of `Trip` records with only an outbound `Flight` in each.
         >
@@ -316,11 +313,9 @@ paths:
 
         The list of `segmentGroups` should come from a specific `Trip` included in a `PollResponse`.
 
-        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking.
+        An optional `extended` map of `key:value` pairs can be used to assoicate certain custom data with this particular request for future tracking.
 
-        For example,
-
-        > It is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
+        > For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
 
       operationId: createCheck
       tags:
@@ -340,9 +335,16 @@ paths:
     get:
       summary: Retrieve information about a booking check
       description: |
-        Given a `checkId` previously returned, a check request with the same `checkId` will be returned. (@todo - be explicit about the Request/Response schema)
+        A `CheckResponse` including a `Check` with the same `checkId` will be returned, given a `checkId` previously returned.
 
-        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
+        The `CheckStatus` for the `checkId` should be retrieved beforehand.
+
+        - If the `CheckStatus` is `completed`, the `Check` record should include the final `totalAmount` in specific `currency`.
+        - Otherwise, the `Check` record will not include the final `totalAmount`.
+
+        An optional `extended` map of `key:value` pairs can be used to assoicate certain custom data with this particular request for future tracking.
+        
+        > For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
 
       operationId: getCheck
       tags:
@@ -358,14 +360,12 @@ paths:
   /booking/checks/{checkId}/status:
     get:
       summary: Retrieve the status of a booking check
-      description: |
-        The status of a booking check with specified `checkId` will be returned.  (@todo - be explicit about the Request/Response schema)
+      description: |      
+        A `CheckStatusResponse` including the `CheckStatus` of a booking check will be returned, given a `checkId` previously returned.
 
         If the `segmentGroups` from the check request are available for booking with respect to the information of `passengers`, the a success `checkStatus` of will be returned along with a `totalAmount` in particular `currency`.
 
         For any reason for which the check failed, a error `checkStatus` will be returned.
-
-        > See response of `200 OK` for status definitions.
 
       operationId: getCheckStatus
       tags:
@@ -382,9 +382,11 @@ paths:
     post:
       summary: Create a booking order of specific flight
       description: |
-        Given a unique `checkId` previously returned, and information of `customer` and `passengers`, a booking order with an unique `orderId` will be returned along with `totalAmount` in particular `currency`. (@todo - be explicit about the Request/Response schema)
+        A `OrderResponse` including the booking `Order` with an unique `orderId` will be returned along with `totalAmount` in particular `currency`, given an booking `Order` including the `checkId` previously returned, and information of `Customer` and information of each `Passenger`.
 
-        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
+        An optional `extended` map of `key:value` pairs can be used to assoicate certain custom data with this particular request for future tracking.
+        
+        > For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
       operationId: createOrder
       tags:
         - Booking
@@ -402,7 +404,7 @@ paths:
     get:
       summary: Retrieve one or more booking orders
       description: |
-        Given one or more criteria in the query string, one or more matching booking orders will be returned. (@todo - be explicit about the Request/Response schema)
+        An `OrdersResponse` including one or more matching booking `Order` records will be returned, given one or more criteria in the query string.
 
         Results will also be paged based on `offset` and `size`.
       operationId: getOrders
@@ -427,7 +429,7 @@ paths:
     get:
       summary: Retrieve information about a booking order
       description: |
-        A booking order with specified `orderId` will be returned. (@todo - be explicit about the Request/Response schema)
+        A booking `Order` with the `orderId` will be returned, given a specific `orderId`.
       operationId: getOrder
       tags:
         - Booking
@@ -442,7 +444,7 @@ paths:
     delete:
       summary: Cancel a booking order that is neither cancelled nor completed
       description: |
-        The booking order with specified `orderId` will be cancelled, if its status is neither `cancelled` nor `completed`. (@todo - be explicit about the Request/Response schema)
+        The booking order with specified `orderId` will be cancelled, if its status is neither `cancelled` nor `completed`.
 
         > IMPORTANT:
         >
@@ -465,10 +467,7 @@ paths:
     get:
       summary: Retrieve the status of a booking order
       description: |
-        The status of a booking order with specified `orderId` will be returned. (@todo - be explicit about the Request/Response schema)
-
-        > See response of `200 OK` for status definitions.
-
+        An `OrderStatusResponse` including the `OrderStatus` of a booking order will be returned, given a specific `orderId`.
       operationId: getOrderStatus
       tags:
         - Booking
@@ -485,7 +484,7 @@ paths:
     post:
       summary: Make a payment to a booking order recently placed
       description: |
-        Given the `orderId`, `totalAmount` in specific `currency` along with `creditCard` information, a payment with an unique `paymentId` will be made and returned. (@todo - be explicit about the Request/Response schema)
+        A `PaymentResponse` including the `Payment` with an unique `paymentId` will be made and returned, given a `Payment` with `orderId`, `totalAmount` in specific `currency` along with `creditCard` information.
       operationId: createPayment
       tags:
         - Payments
@@ -508,7 +507,7 @@ paths:
     get:
       summary: Retrieve information about a payment
       description: |
-        Given a `paymentId`, information about the corresponding payment will be returned. (@todo - be explicit about the Request/Response schema)
+        A `PaymentResponse` including the `Payment` information will be returned, given a specific `paymentId`.
       operationId: getPayment
       tags:
         - Payments
@@ -630,7 +629,7 @@ components:
     SearchResponseOK:
       description: |
         OK
-        > @todo
+        > This is a `SearchResponse` including a `requestId` that can be referred to in `PollRequest`.
       content:
         application/json:
           schema:
@@ -639,7 +638,7 @@ components:
     SearchResponseBadRequest:
       description: |
         Bad Request
-        > @todo
+        > Check if anything incorrect or missing in the `SearchRequest`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -705,7 +704,7 @@ components:
       description: |
         Bad Request
         >
-        > Check if anything incorrect or missing in the `IncrementalPollRequest`.
+        > Check if anything incorrect or missing in the `IncrementalPollRequest`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -717,7 +716,7 @@ components:
     CheckResponseOK:
       description: |
         OK
-        > @todo
+        > This is a `CheckResponse` including a `Check` with unique `checkId` that can be referred to when obtaining `CheckStatus` or in creating an `Order`.
       content:
         application/json:
           schema:
@@ -726,7 +725,7 @@ components:
     CheckResponseBadRequest:
       description: |
         Bad Request
-        > @todo
+        > Check if anything incorrect or missing in the `Check`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -737,7 +736,7 @@ components:
     CheckResponseNotFound:
       description: |
         Not Found
-        > @todo
+        > No `Check` could be found for the specific `checkId`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -933,7 +932,10 @@ components:
           type: string
           example: 20211128:1740:HEL:CPH:AY959-20211129:1100:CPH:BCN:VY1871-20211129:1850:BCN:CDG:VY8240
         segments:
-          description: A flight consists of one or more segments. For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
+          description: |
+            A flight consists of one or more segments.
+            
+            > For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
           type: array
           minItems: 1
           items:
@@ -979,7 +981,10 @@ components:
         type:
           $ref: "#/components/schemas/TripType"
         segments:
-          description: A segment group consists of one or more segments. For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
+          description: |
+            A segment group consists of one or more segments. 
+            
+            > For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
           type: array
           minItems: 1
           items:
