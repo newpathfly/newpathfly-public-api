@@ -343,7 +343,7 @@ paths:
         - Otherwise, the `Check` record will not include the final `totalAmount`.
 
         An optional `extended` map of `key:value` pairs can be used to assoicate certain custom data with this particular request for future tracking.
-        
+
         > For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
 
       operationId: getCheck
@@ -360,7 +360,7 @@ paths:
   /booking/checks/{checkId}/status:
     get:
       summary: Retrieve the status of a booking check
-      description: |      
+      description: |
         A `CheckStatusResponse` including the `CheckStatus` of a booking check will be returned, given a `checkId` previously returned.
 
         If the `segmentGroups` from the check request are available for booking with respect to the information of `passengers`, the a success `checkStatus` of will be returned along with a `totalAmount` in particular `currency`.
@@ -385,7 +385,7 @@ paths:
         A `OrderResponse` including the booking `Order` with an unique `orderId` will be returned along with `totalAmount` in particular `currency`, given an booking `Order` including the `checkId` previously returned, and information of `Customer` and information of each `Passenger`.
 
         An optional `extended` map of `key:value` pairs can be used to assoicate certain custom data with this particular request for future tracking.
-        
+
         > For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
       operationId: createOrder
       tags:
@@ -934,7 +934,7 @@ components:
         segments:
           description: |
             A flight consists of one or more segments.
-            
+
             > For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
           type: array
           minItems: 1
@@ -983,7 +983,7 @@ components:
         segments:
           description: |
             A segment group consists of one or more segments. 
-            
+
             > For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
           type: array
           minItems: 1
