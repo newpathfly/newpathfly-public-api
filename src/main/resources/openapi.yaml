@@ -365,7 +365,7 @@ paths:
 
         If the `segmentGroups` from the check request are available for booking with respect to the information of `passengers`, the a success `checkStatus` of will be returned along with a `totalAmount` in particular `currency`.
 
-        For any reason for which the check failed, a error `checkStatus` will be returned.
+        For any reason for which the check failed, an error `checkStatus` will be returned.
 
       operationId: getCheckStatus
       tags:
@@ -382,7 +382,7 @@ paths:
     post:
       summary: Create a booking order of specific flight
       description: |
-        A `OrderResponse` including the booking `Order` with an unique `orderId` will be returned along with `totalAmount` in particular `currency`, given an booking `Order` including the `checkId` previously returned, and information of `Customer` and information of each `Passenger`.
+        An `OrderResponse` including the booking `Order` with an unique `orderId` will be returned along with `totalAmount` in particular `currency`, given an booking `Order` including the `checkId` previously returned, and information of `Customer` and information of each `Passenger`.
 
         An optional `extended` map of `key:value` pairs can be used to assoicate certain custom data with this particular request for future tracking.
 
@@ -638,7 +638,7 @@ components:
     SearchResponseBadRequest:
       description: |
         Bad Request
-        > Check if anything incorrect or missing in the `SearchRequest`. See `message` for any error message.
+        > Check if anything incorrect or missing in the given `SearchRequest`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -704,7 +704,7 @@ components:
       description: |
         Bad Request
         >
-        > Check if anything incorrect or missing in the `IncrementalPollRequest`. See `message` for any error message.
+        > Check if anything incorrect or missing in the given `IncrementalPollRequest`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -725,7 +725,7 @@ components:
     CheckResponseBadRequest:
       description: |
         Bad Request
-        > Check if anything incorrect or missing in the `Check`. See `message` for any error message.
+        > Check if anything incorrect or missing in the given `Check`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -747,7 +747,7 @@ components:
     CheckStatusResponseOK:
       description: |
         OK
-        > @todo
+        > This is a `CheckStatusResponse` including the `CheckStatus` for the given `checkId`.
       content:
         application/json:
           schema:
@@ -756,7 +756,7 @@ components:
     CheckStatusResponseNotFound:
       description: |
         Not Found
-        > @todo
+        > No `CheckStatus` could be found for the specific `checkId`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -767,7 +767,7 @@ components:
     OrderResponseOK:
       description: |
         OK
-        > @todo
+        > This is an `OrderResponse` including an `Order` with unique `orderId` that can be referred to when obtaining `OrderStatus`.
       content:
         application/json:
           schema:
@@ -776,7 +776,7 @@ components:
     OrderResponseBadRequest:
       description: |
         Bad Request
-        > @todo
+        > Check if anything incorrect or missing in the given `Order`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -787,7 +787,7 @@ components:
     OrderResponseNotFound:
       description: |
         Not Found
-        > @todo
+        > No `Order` could be found for the specific `orderId`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -798,7 +798,7 @@ components:
     OrdersResponseOK:
       description: |
         OK
-        > @todo
+        > This is an `OrdersResponse` including an array of zero or more `Order` records.
       content:
         application/json:
           schema:
@@ -807,7 +807,7 @@ components:
     OrdersResponseBadRequest:
       description: |
         Bad Request
-        > @todo
+        > Check if anything incorrect or missing in the given criteria. See `message` for any error message.
       content:
         application/json:
           schema:
