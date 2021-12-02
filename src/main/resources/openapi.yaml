@@ -224,7 +224,7 @@ paths:
     post:
       summary: Create a search request
       description: |
-        A `SearchResponse` including a `requestId` will be returned given a valid `SearchRequest`.
+        A `SearchResponse` containing a `requestId` will be returned given a valid `SearchRequest`.
 
         This `requestId` is required for polling for results later on.
       operationId: createSearch
@@ -245,7 +245,7 @@ paths:
     post:
       summary: Poll for search results
       description: |
-        A `PollResponse` including full or partial search results will be returned, given a valid `PollRequest` including a `requestId`.
+        A `PollResponse` containing full or partial search results will be returned, given a valid `PollRequest` including a `requestId`.
 
         Corresponding response status code indicates whether another poll is neccessary until all results are returned.
       operationId: createPoll
@@ -333,9 +333,9 @@ paths:
 
   /booking/checks/{checkId}:
     get:
-      summary: Retrieve information about a booking check
+      summary: Retrieve a booking check
       description: |
-        A `CheckResponse` including a `Check` with the same `checkId` will be returned, given a `checkId` previously returned.
+        A `CheckResponse` containing a `Check` with the same `checkId` will be returned, given a `checkId` previously returned.
 
         The `CheckStatus` for the `checkId` should be retrieved beforehand.
 
@@ -361,7 +361,7 @@ paths:
     get:
       summary: Retrieve the status of a booking check
       description: |
-        A `CheckStatusResponse` including the `CheckStatus` of a booking check will be returned, given a `checkId` previously returned.
+        A `CheckStatusResponse` containing the `CheckStatus` of a booking check will be returned, given a `checkId` previously returned.
 
         If the `segmentGroups` from the check request are available for booking with respect to the information of `passengers`, the a success `checkStatus` of will be returned along with a `totalAmount` in particular `currency`.
 
@@ -382,7 +382,7 @@ paths:
     post:
       summary: Create a booking order of specific flight
       description: |
-        An `OrderResponse` including the booking `Order` with an unique `orderId` will be returned along with `totalAmount` in particular `currency`, given an booking `Order` including the `checkId` previously returned, and information of `Customer` and information of each `Passenger`.
+        An `OrderResponse` containing the booking `Order` with an unique `orderId` will be returned along with `totalAmount` in particular `currency`, given an booking `Order` including the `checkId` previously returned, and information of `Customer` and information of each `Passenger`.
 
         An optional `extended` map of `key:value` pairs can be used to assoicate certain custom data with this particular request for future tracking.
 
@@ -404,7 +404,7 @@ paths:
     get:
       summary: Retrieve one or more booking orders
       description: |
-        An `OrdersResponse` including one or more matching booking `Order` records will be returned, given one or more criteria in the query string.
+        An `OrdersResponse` containing one or more matching booking `Order` records will be returned, given one or more criteria in the query string.
 
         Results will also be paged based on `offset` and `size`.
       operationId: getOrders
@@ -427,7 +427,7 @@ paths:
 
   /booking/orders/{orderId}:
     get:
-      summary: Retrieve information about a booking order
+      summary: Retrieve a booking order
       description: |
         A booking `Order` with the `orderId` will be returned, given a specific `orderId`.
       operationId: getOrder
@@ -467,7 +467,7 @@ paths:
     get:
       summary: Retrieve the status of a booking order
       description: |
-        An `OrderStatusResponse` including the `OrderStatus` of a booking order will be returned, given a specific `orderId`.
+        An `OrderStatusResponse` containing the `OrderStatus` of a booking order will be returned, given a specific `orderId`.
       operationId: getOrderStatus
       tags:
         - Booking
@@ -484,7 +484,7 @@ paths:
     post:
       summary: Make a payment to a booking order recently placed
       description: |
-        A `PaymentResponse` including the `Payment` with an unique `paymentId` will be made and returned, given a `Payment` with `orderId`, `totalAmount` in specific `currency` along with `creditCard` information.
+        A `PaymentResponse` containing the `Payment` with an unique `paymentId` will be made and returned, given a `Payment` with `orderId`, `totalAmount` in specific `currency` along with `creditCard` information.
       operationId: createPayment
       tags:
         - Payments
@@ -507,7 +507,7 @@ paths:
     get:
       summary: Retrieve information about a payment
       description: |
-        A `PaymentResponse` including the `Payment` information will be returned, given a specific `paymentId`.
+        A `PaymentResponse` containing the `Payment` information will be returned, given a specific `paymentId`.
       operationId: getPayment
       tags:
         - Payments
@@ -629,7 +629,7 @@ components:
     SearchResponseOK:
       description: |
         OK
-        > This is a `SearchResponse` including a `requestId` that can be referred to in `PollRequest`.
+        > This is a `SearchResponse` containing a `requestId` that can be referred to in `PollRequest`.
       content:
         application/json:
           schema:
@@ -716,7 +716,7 @@ components:
     CheckResponseOK:
       description: |
         OK
-        > This is a `CheckResponse` including a `Check` with unique `checkId` that can be referred to when obtaining `CheckStatus` or in creating an `Order`.
+        > This is a `CheckResponse` containing a `Check` with unique `checkId` that can be referred to when obtaining `CheckStatus` or in creating an `Order`.
       content:
         application/json:
           schema:
@@ -747,7 +747,7 @@ components:
     CheckStatusResponseOK:
       description: |
         OK
-        > This is a `CheckStatusResponse` including the `CheckStatus` for the given `checkId`.
+        > This is a `CheckStatusResponse` containing the `CheckStatus` for the given `checkId`.
       content:
         application/json:
           schema:
@@ -767,7 +767,7 @@ components:
     OrderResponseOK:
       description: |
         OK
-        > This is an `OrderResponse` including an `Order` with unique `orderId` that can be referred to when obtaining `OrderStatus`.
+        > This is an `OrderResponse` containing the `Order` with a unique `orderId` that can be referred to when obtaining `OrderStatus`.
       content:
         application/json:
           schema:
@@ -798,7 +798,7 @@ components:
     OrdersResponseOK:
       description: |
         OK
-        > This is an `OrdersResponse` including an array of zero or more `Order` records.
+        > This is an `OrdersResponse` containing an array of zero or more `Order` records.
       content:
         application/json:
           schema:
@@ -818,7 +818,7 @@ components:
     OrderStatusResponseOK:
       description: |
         OK
-        > @todo
+        > This is a `OrderStatusResponse` containing the `OrderStatus` for the given `orderId`.
       content:
         application/json:
           schema:
@@ -827,7 +827,7 @@ components:
     OrderStatusResponseNotFound:
       description: |
         Not Found
-        > @todo
+        > No `OrderStatus` could be found for the specific `orderId`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -839,7 +839,7 @@ components:
     PaymentResponseOK:
       description: |
         OK
-        > @todo
+        > This is an `PaymentResponse` containing the `Payment` with a unique `paymentId` that can be referred to when obtaining the `Payment`.
       content:
         application/json:
           schema:
@@ -848,7 +848,7 @@ components:
     PaymentResponseBadRequest:
       description: |
         Bad Request
-        > @todo
+        > Check if anything incorrect or missing in the given `Payment`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -859,7 +859,7 @@ components:
     PaymentResponseFailed:
       description: |
         Payment Required
-        > @todo
+        > The given `Payment` failed for some reason. See `message` for any error message.
       content:
         application/json:
           schema:
