@@ -870,7 +870,7 @@ components:
     PaymentResponseConflict:
       description: |
         Conflict
-        > @todo
+        > The `Order` associated with the `orderId` in the given `Payment` might have already been paid.
       content:
         application/json:
           schema:
