@@ -1,17 +1,17 @@
 openapi: 3.0.3
 info:
   title: Virtual Interlining API
-  version: 2.4.1
+  version: 2.5.0
   description: |
     This API specification can be downloaded in [OpenAPI](https://openapis.org) format. Many [code generator tools](https://openapi-generator.tech/docs/generators) are available to generate client code in different programming languages based on the specification file.
 
-    For example, to generate client code in Java, run following command.
+    > For example, to generate client code in Java, run following command.
+    > 
+    > ```
+    > openapi-generator-cli generate -g java -o newpathfly -i openapi.yaml
+    > ```
 
-    ```text
-    openapi-generator-cli generate -g java -o newpathfly -i openapi.yaml
-    ```
-
-    > A SDK has been prebuilt for Java based projects. See [here](https://github.com/newpathfly/newpathfly-public-sdk) for more details.
+    A SDK has been prebuilt for Java based projects. See [here](https://github.com/newpathfly/newpathfly-public-sdk) for more details.
 
     # Introduction
 
@@ -76,13 +76,21 @@ tags:
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/SearchResponse" />
 
-  - name: SearchResultPoll
+  - name: PollRequest
     description: |
-      <SchemaDefinition schemaRef="#/components/schemas/SearchResultPoll" />
+      <SchemaDefinition schemaRef="#/components/schemas/PollRequest" />
 
   - name: PollResponse
     description: |
       <SchemaDefinition schemaRef="#/components/schemas/PollResponse" />
+
+  - name: IncrementalPollRequest (BETA)
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/IncrementalPollRequest" />
+
+  - name: IncrementalPollResponse (BETA)
+    description: |
+      <SchemaDefinition schemaRef="#/components/schemas/IncrementalPollResponse" />
 
   - name: Query
     description: |
@@ -181,8 +189,10 @@ x-tagGroups:
     tags:
       - SearchRequest
       - SearchResponse
-      - SearchResultPoll
+      - PollRequest
       - PollResponse
+      - IncrementalPollRequest (BETA)
+      - IncrementalPollResponse (BETA)
       - Query
       - Trip
       - Price
@@ -213,7 +223,10 @@ paths:
   /shopping/searches:
     post:
       summary: Create a search request
-      description: A `requestId` will be returned given a valid search request. This `requestId` is required for polling for search results later on.
+      description: |
+        A `SearchResponse` containing a `requestId` will be returned given a valid `SearchRequest`.
+
+        This `requestId` is required for polling for results later on.
       operationId: createSearch
       tags:
         - Shopping
@@ -232,7 +245,9 @@ paths:
     post:
       summary: Poll for search results
       description: |
-        Given a `requestId` obtained from search, corresponding search results will be returned in full (NOT incremental). Different response status code indicates whether another poll is neccessary until entire full results are returned.
+        A `PollResponse` containing full or partial search results will be returned, given a valid `PollRequest` including a `requestId`.
+
+        Corresponding response status code indicates whether another poll is neccessary until all results are returned.
       operationId: createPoll
       tags:
         - Shopping
@@ -240,7 +255,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SearchResultPoll"
+              $ref: "#/components/schemas/PollRequest"
       responses:
         "200":
           $ref: "#/components/responses/PollResponseOK"
@@ -249,16 +264,58 @@ paths:
         "400":
           $ref: "#/components/responses/PollResponseBadRequest"
 
+  /shopping/incrementalpolls:
+    post:
+      summary: Incremental poll for search results (BETA)
+      description: |
+
+        A `IncrementalPollResponse` will be returned, given a `IncrementalPollRequest` including a `requestId`, and zero or more `flightKey` values corresponding to zero or more selected flights from previous `IncrementalPollResponse` if applicable.
+
+        Unlike regular poll above, incremental poll returns results based on flights previously selected by client. It can provide a better experience for the client by making incremental choices.
+
+        Before the `IncrementalPollResponse` of entire `Trip`, which is a `Trip` that includes all `Flight` records, is returned,
+
+        - `segmentGroups` will be empty, because it is not ready for booking.
+        - `prices` will be the lowest of all `Trip` records matching the selected `Flight` records.
+
+        >
+        > For example, to search for a round-trip, in other words, a `Trip` of an departure `Flight` and a return `Flight`,
+        > 
+        > - First call to this endpoint without any `flightKey` would result in a list of `Trip` records with only an outbound `Flight` in each.
+        >
+        > - Secong call to this endpoint with the `flightKey` of a selected outbound `Flight`, would result in a list of `Trip` records with both `Flight` records in each, which forms a round-trip.
+        >
+
+        Corresponding response status code indicates whether another poll is neccessary until results are returned.
+
+      operationId: createIncrementalPoll
+      tags:
+        - Shopping
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncrementalPollRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/IncrementalPollResponseOK"
+        "206":
+          $ref: "#/components/responses/IncrementalPollResponsePartial"
+        "400":
+          $ref: "#/components/responses/IncrementalPollResponseBadRequest"
+
   # booking
   /booking/checks:
     post:
-      summary: Create a booking check of specific flight
+      summary: Create a booking check of specific trip
       description: |
-        A specific flight contains a list of specific `segmentGroups` returned from flight search.
-        
-        Given a list of `segmentGroups` and information of `passengers`, a check request with an unique `checkId` will be returned.
+        A `CheckResponse` with an unique `checkId` will be returned, given a `Check` including a list of `segmentGroups` and information of `passengers`.
 
-        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
+        The list of `segmentGroups` should come from a specific `Trip` included in a `PollResponse`.
+
+        An optional `extended` map of `key:value` pairs can be used to assoicate certain custom data with this particular request for future tracking.
+
+        > For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
 
       operationId: createCheck
       tags:
@@ -276,11 +333,18 @@ paths:
 
   /booking/checks/{checkId}:
     get:
-      summary: Retrieve information about a booking check
+      summary: Retrieve a booking check
       description: |
-        Given a `checkId` previously returned, a check request with the same `checkId` will be returned.
+        A `CheckResponse` containing a `Check` with the same `checkId` will be returned, given a `checkId` previously returned.
 
-        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
+        The `CheckStatus` for the `checkId` should be retrieved beforehand.
+
+        - If the `CheckStatus` is `completed`, the `Check` record should include the final `totalAmount` in specific `currency`.
+        - Otherwise, the `Check` record will not include the final `totalAmount`.
+
+        An optional `extended` map of `key:value` pairs can be used to assoicate certain custom data with this particular request for future tracking.
+
+        > For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
 
       operationId: getCheck
       tags:
@@ -297,13 +361,11 @@ paths:
     get:
       summary: Retrieve the status of a booking check
       description: |
-        The status of a booking check with specified `checkId` will be returned. 
+        A `CheckStatusResponse` containing the `CheckStatus` of a booking check will be returned, given a `checkId` previously returned.
 
         If the `segmentGroups` from the check request are available for booking with respect to the information of `passengers`, the a success `checkStatus` of will be returned along with a `totalAmount` in particular `currency`.
 
-        For any reason for which the check failed, a error `checkStatus` will be returned.
-
-        > See response of `200 OK` for status definitions.
+        For any reason for which the check failed, an error `checkStatus` will be returned.
 
       operationId: getCheckStatus
       tags:
@@ -320,9 +382,11 @@ paths:
     post:
       summary: Create a booking order of specific flight
       description: |
-        Given a unique `checkId` previously returned, and information of `customer` and `passengers`, a booking order with an unique `orderId` will be returned along with `totalAmount` in particular `currency`.
+        An `OrderResponse` containing the booking `Order` with an unique `orderId` will be returned along with `totalAmount` in particular `currency`, given an booking `Order` including the `checkId` previously returned, and information of `Customer` and information of each `Passenger`.
 
-        An optional map of `key:value` pairs can be passed to `extended`, to assoicate certain custom data with this particular request for future tracking. For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
+        An optional `extended` map of `key:value` pairs can be used to assoicate certain custom data with this particular request for future tracking.
+
+        > For example, it is recommended to pass a client side order ID to this `extended` map, so later when a response is returned it is convenient to identify the corresponding order at client side.
       operationId: createOrder
       tags:
         - Booking
@@ -340,7 +404,7 @@ paths:
     get:
       summary: Retrieve one or more booking orders
       description: |
-        Given one or more criteria in the query string, one or more matching booking orders will be returned.
+        An `OrdersResponse` containing one or more matching booking `Order` records will be returned, given one or more criteria in the query string.
 
         Results will also be paged based on `offset` and `size`.
       operationId: getOrders
@@ -363,9 +427,9 @@ paths:
 
   /booking/orders/{orderId}:
     get:
-      summary: Retrieve information about a booking order
+      summary: Retrieve a booking order
       description: |
-        A booking order with specified `orderId` will be returned.
+        A booking `Order` with the `orderId` will be returned, given a specific `orderId`.
       operationId: getOrder
       tags:
         - Booking
@@ -403,10 +467,7 @@ paths:
     get:
       summary: Retrieve the status of a booking order
       description: |
-        The status of a booking order with specified `orderId` will be returned. 
-
-        > See response of `200 OK` for status definitions.
-
+        An `OrderStatusResponse` containing the `OrderStatus` of a booking order will be returned, given a specific `orderId`.
       operationId: getOrderStatus
       tags:
         - Booking
@@ -423,7 +484,7 @@ paths:
     post:
       summary: Make a payment to a booking order recently placed
       description: |
-        Given the `orderId`, `totalAmount` in specific `currency` along with `creditCard` information, a payment with an unique `paymentId` will be made and returned.
+        A `PaymentResponse` containing the `Payment` with an unique `paymentId` will be made and returned, given a `Payment` with `orderId`, `totalAmount` in specific `currency` along with `creditCard` information.
       operationId: createPayment
       tags:
         - Payments
@@ -446,7 +507,7 @@ paths:
     get:
       summary: Retrieve information about a payment
       description: |
-        Given a `paymentId`, information about the corresponding payment will be returned.
+        A `PaymentResponse` containing the `Payment` information will be returned, given a specific `paymentId`.
       operationId: getPayment
       tags:
         - Payments
@@ -566,14 +627,18 @@ components:
   responses:
     # Search
     SearchResponseOK:
-      description: OK
+      description: |
+        OK
+        > This is a `SearchResponse` containing a `requestId` that can be referred to in `PollRequest`.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/SearchResponse"
 
     SearchResponseBadRequest:
-      description: Bad Request
+      description: |
+        Bad Request
+        > Check if anything incorrect or missing in the given `SearchRequest`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -582,21 +647,30 @@ components:
             message: "Bad Request"
 
     PollResponseOK:
-      description: OK
+      description: |
+        OK
+        >
+        > All have been returned. There is no more result available.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PollResponse"
 
     PollResponsePartial:
-      description: Partial
+      description: |
+        Partial
+        >
+        > There are more results available to be polled for the same `PollRequest`.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PollResponse"
 
     PollResponseBadRequest:
-      description: Bad Request
+      description: |
+        Partial
+        >
+        > There are more results available to be polled for the same `PollRequest`.
       content:
         application/json:
           schema:
@@ -604,16 +678,54 @@ components:
           example:
             message: "Bad Request"
 
+    IncrementalPollResponseOK:
+      description: |
+        OK
+        >
+        > This is the last `IncrementalPollResponse` for the current `IncrementalPollRequest`. There is no more available.
+        >
+        > (If a non-existing `requestId` or `flightKey` was provided, a `IncrementalPollResponse` with empty result set will be returned.)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/IncrementalPollResponse"
+
+    IncrementalPollResponsePartial:
+      description: |
+        Partial
+        >
+        > This is a `IncrementalPollResponse` for the same `IncrementalPollRequest`. There are more available.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/IncrementalPollResponse"
+
+    IncrementalPollResponseBadRequest:
+      description: |
+        Bad Request
+        >
+        > Check if anything incorrect or missing in the given `IncrementalPollRequest`. See `message` for any error message.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/IncrementalPollResponse"
+          example:
+            message: "Bad Request"
+
     # Booking
     CheckResponseOK:
-      description: OK
+      description: |
+        OK
+        > This is a `CheckResponse` containing a `Check` with unique `checkId` that can be referred to when obtaining `CheckStatus` or in creating an `Order`.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/CheckResponse"
 
     CheckResponseBadRequest:
-      description: Bad Request
+      description: |
+        Bad Request
+        > Check if anything incorrect or missing in the given `Check`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -622,7 +734,9 @@ components:
             message: "Bad Request"
 
     CheckResponseNotFound:
-      description: Not Found
+      description: |
+        Not Found
+        > No `Check` could be found for the specific `checkId`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -631,14 +745,18 @@ components:
             message: "Not Found"
 
     CheckStatusResponseOK:
-      description: OK
+      description: |
+        OK
+        > This is a `CheckStatusResponse` containing the `CheckStatus` for the given `checkId`.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/CheckStatusResponse"
 
     CheckStatusResponseNotFound:
-      description: Not Found
+      description: |
+        Not Found
+        > No `CheckStatus` could be found for the specific `checkId`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -647,14 +765,18 @@ components:
             message: "Not Found"
 
     OrderResponseOK:
-      description: OK
+      description: |
+        OK
+        > This is an `OrderResponse` containing the `Order` with a unique `orderId` that can be referred to when obtaining `OrderStatus`.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderResponse"
 
     OrderResponseBadRequest:
-      description: Bad Request
+      description: |
+        Bad Request
+        > Check if anything incorrect or missing in the given `Order`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -663,7 +785,9 @@ components:
             message: "Bad Request"
 
     OrderResponseNotFound:
-      description: Not Found
+      description: |
+        Not Found
+        > No `Order` could be found for the specific `orderId`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -672,14 +796,18 @@ components:
             message: "Not Found"
 
     OrdersResponseOK:
-      description: OK
+      description: |
+        OK
+        > This is an `OrdersResponse` containing an array of zero or more `Order` records.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrdersResponse"
 
     OrdersResponseBadRequest:
-      description: Bad Request
+      description: |
+        Bad Request
+        > Check if anything incorrect or missing in the given criteria. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -688,14 +816,18 @@ components:
             message: "Bad Request"
 
     OrderStatusResponseOK:
-      description: OK
+      description: |
+        OK
+        > This is a `OrderStatusResponse` containing the `OrderStatus` for the given `orderId`.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/OrderStatusResponse"
 
     OrderStatusResponseNotFound:
-      description: Not Found
+      description: |
+        Not Found
+        > No `OrderStatus` could be found for the specific `orderId`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -705,14 +837,18 @@ components:
 
     # Payment
     PaymentResponseOK:
-      description: OK
+      description: |
+        OK
+        > This is an `PaymentResponse` containing the `Payment` with a unique `paymentId` that can be referred to when obtaining the `Payment`.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/PaymentResponse"
 
     PaymentResponseBadRequest:
-      description: Bad Request
+      description: |
+        Bad Request
+        > Check if anything incorrect or missing in the given `Payment`. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -721,7 +857,9 @@ components:
             message: "Bad Request"
 
     PaymentResponseFailed:
-      description: Payment Required
+      description: |
+        Payment Required
+        > The given `Payment` failed for some reason. See `message` for any error message.
       content:
         application/json:
           schema:
@@ -730,7 +868,9 @@ components:
             message: "Payment Required"
 
     PaymentResponseConflict:
-      description: Conflict
+      description: |
+        Conflict
+        > The `Order` associated with the `orderId` in the given `Payment` might have already been paid.
       content:
         application/json:
           schema:
@@ -787,8 +927,15 @@ components:
     Flight:
       description: A flight is a pair of original departure to final destination.
       properties:
+        flightKey:
+          description: A unique string generated for the flight
+          type: string
+          example: 20211128:1740:HEL:CPH:AY959-20211129:1100:CPH:BCN:VY1871-20211129:1850:BCN:CDG:VY8240
         segments:
-          description: A flight consists of one or more segments. For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
+          description: |
+            A flight consists of one or more segments.
+
+            > For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
           type: array
           minItems: 1
           items:
@@ -834,7 +981,10 @@ components:
         type:
           $ref: "#/components/schemas/TripType"
         segments:
-          description: A segment group consists of one or more segments. For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
+          description: |
+            A segment group consists of one or more segments. 
+
+            > For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
           type: array
           minItems: 1
           items:
@@ -906,7 +1056,8 @@ components:
 
     # Search Request
     SearchRequest:
-      description: This is the payload to be sent when calling `/searches` endpoint.
+      description: |
+        @todo
       required:
         - queries
         - adultAmount
@@ -942,18 +1093,19 @@ components:
         requestId:
           description: This value should be included in the polling later on.
           type: string
-          example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+          example: OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS
 
     # Poll
-    SearchResultPoll:
-      description: This is the payload to be sent when calling `/polls` endpoint. The virtual interlining engine will mostly likely keep generating results at the backend, so stop calling this endpoint when number of results is good enough as a general practice.
+    PollRequest:
+      description: |
+        @todo
       required:
         - requestId
       properties:
         requestId:
-          description: This is the request ID for which to be polled.
+          description: This is the request ID found in the `SearchResponse`.
           type: string
-          example: "OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS"
+          example: OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS
         offset:
           description: This is the offset of the results to be polled next.
           type: integer
@@ -974,6 +1126,58 @@ components:
           default: USD
 
     PollResponse:
+      description: This result contains up to the number of flight trips specified by `size` in the request.
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+      properties:
+        currencyCode:
+          description: This is the 3-letter currency code in which price is provided.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: EUR
+        trips:
+          description: This is a list of trips based on `queries` and `TripType` in the corresponding `SearchRequest`.
+          type: array
+          items:
+            $ref: "#/components/schemas/Trip"
+
+    IncrementalPollRequest:
+      description: |
+        @todo
+      required:
+        - requestId
+      properties:
+        requestId:
+          description: This is the request ID found in the `SearchResponse`.
+          type: string
+          example: OW|Economy|1-0-0|UnlimitedStarter-UnlimitedCandidate|20210901:@YTO:@AMS
+        flightKeys:
+          description: This is a list of zero or more `flightKey` values corresponding to zero or more flights selected from a trip in the previous `IncrementalPollResponse`.
+          type: array
+          items:
+            type: string
+            example: 20211128:1740:HEL:CPH:AY959-20211129:1100:CPH:BCN:VY1871-20211129:1850:BCN:CDG:VY8240
+        offset:
+          description: This is the offset of the results to be polled next.
+          type: integer
+          minimum: 0
+          default: 100
+        size:
+          description: This is the maximum number of results to be polled. The actual number of results might be less when there is no more results available at the moment.
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+        currency:
+          description: Currency code of results to be polled.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: USD
+          default: USD
+
+    IncrementalPollResponse:
       description: This result contains up to the number of flight trips specified by `size` in the request.
       allOf:
         - $ref: "#/components/schemas/BaseResponse"
@@ -1031,17 +1235,18 @@ components:
           example: "20210401"
 
     Trip:
-      description: A trip is one complete travel. It can be one-way trip or a round trip, depending on the number of included flights.
+      description: A `Trip` is one complete travel. It can be one-way `Trip` or a round `Trip`, depending on the number of included `Flight` records.
       properties:
         flights:
-          description: A one-way trip consists of one flight. A round-trip consists of two flights going forth and back between two places.
+          description: A one-way `Trip` consists of one `Flight`. A round `Trip` consists of a departure `Flight` and a returning `Flight`.
           type: array
           minItems: 1
           items:
             $ref: "#/components/schemas/Flight"
         segmentGroups:
           description: |
-            A list of segment groups, where each segment group is a list of segments suggested to be placed within the same booking order.
+            A list of `SegmentGroup` records, where each `SegmentGroup` is a list of `Segment` records suggested to be placed within the same booking order.
+
           type: array
           readOnly: true
           minItems: 1
