@@ -1057,7 +1057,7 @@ components:
     # Search Request
     SearchRequest:
       description: |
-        @todo
+        todo
       required:
         - queries
         - adultAmount
@@ -1098,7 +1098,7 @@ components:
     # Poll
     PollRequest:
       description: |
-        @todo
+        todo
       required:
         - requestId
       properties:
@@ -1144,7 +1144,7 @@ components:
 
     IncrementalPollRequest:
       description: |
-        @todo
+        todo
       required:
         - requestId
       properties:
