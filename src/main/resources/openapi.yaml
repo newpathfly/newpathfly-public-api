@@ -1266,6 +1266,10 @@ components:
           $ref: "#/components/schemas/Price"
         ALL:
           $ref: "#/components/schemas/Price"
+        extended:
+          $ref: "#/components/schemas/Extended"
+
+
 
     Price:
       description: This is the pricing information including `price`, `tax` and `totalPrice`.
