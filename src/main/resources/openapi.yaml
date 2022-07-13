@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
   title: Virtual Interlining API
-  version: 2.5.0
-  description: |
+  version: 2.6.1
+  description: |-
     This API specification can be downloaded in [OpenAPI](https://openapis.org) format. Many [code generator tools](https://openapi-generator.tech/docs/generators) are available to generate client code in different programming languages based on the specification file.
 
     > For example, to generate client code in Java, run following command.
@@ -16,7 +16,7 @@ info:
     # Introduction
 
     ## What is Virtual Interlining?
-    ​
+
     Interlining is an airline-industry-specific term. Carriers come to an agreement with others, or join an alliance, and then passengers can fly to their destination using all of those airlines in agreement. 
 
     Virtual interlining is where the technology behind the scenes organizes the means for passengers to travel on multiple carriers on a single itinerary even without an agreement. Our virtual interlining technology not only gives your more content in addition to GDS, it also gives contents with more competitive pricing.
@@ -25,145 +25,145 @@ info:
     name: newpathfly
 
 servers:
-  - url: http://uat-api.newpathfly.com/v2
-  - url: http://api.newpathfly.com/v2
+  - url: https://uat-vi-api.newpathfly.com/v2
+  - url: https://vi-api.newpathfly.com/v2
 
 tags:
   - name: Shopping
-    description: |
+    description: |-
       Search for virtual interlining offerings of cheapest flights.
 
   - name: Booking
-    description: |
+    description: |-
       Place booking orders of virtually interlined flights.
 
   - name: Payments
-    description: |
+    description: |-
       Make payments to booking orders of virtually interlined flights.
 
   # Enums
   - name: FareClass
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/FareClass" />
 
   - name: SeatStatus
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/SeatStatus" />
 
   - name: TripType
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/TripType" />
 
   # Common Schemas
   - name: Flight
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/Flight" />
 
   - name: Segment
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/Segment" />
 
   - name: SegmentGroup
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/SegmentGroup" />
 
   # Shopping Schemas
   - name: SearchRequest
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/SearchRequest" />
 
   - name: SearchResponse
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/SearchResponse" />
 
   - name: PollRequest
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/PollRequest" />
 
   - name: PollResponse
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/PollResponse" />
 
   - name: IncrementalPollRequest (BETA)
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/IncrementalPollRequest" />
 
   - name: IncrementalPollResponse (BETA)
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/IncrementalPollResponse" />
 
   - name: Query
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/Query" />
 
   - name: Trip
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/Trip" />
 
   - name: Price
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/Price" />
 
   # Booking Schemas
   - name: Check
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/Check" />
 
   - name: CheckResponse
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/CheckResponse" />
 
   - name: CheckStatus
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/CheckStatus" />
 
   - name: CheckStatusResponse
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/CheckStatusResponse" />
 
   - name: Order
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/Order" />
 
   - name: OrderResponse
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/OrderResponse" />
 
   - name: OrdersResponse
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/OrdersResponse" />
 
   - name: OrderStatus
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/OrderStatus" />
 
   - name: OrderStatusResponse
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/OrderStatusResponse" />
 
   - name: Customer
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/Customer" />
 
   - name: Passenger
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/Passenger" />
 
   - name: TravelDocument
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/TravelDocument" />
 
   # Payment Schemas
   - name: Payment
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/Payment" />
 
   - name: PaymentResponse
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/PaymentResponse" />
 
   - name: CreditCard
-    description: |
+    description: |-
       <SchemaDefinition schemaRef="#/components/schemas/CreditCard" />
 
 x-tagGroups:
@@ -223,7 +223,7 @@ paths:
   /shopping/searches:
     post:
       summary: Create a search request
-      description: |
+      description: |-
         A `SearchResponse` containing a `requestId` will be returned given a valid `SearchRequest`.
 
         This `requestId` is required for polling for results later on.
@@ -244,7 +244,7 @@ paths:
   /shopping/polls:
     post:
       summary: Poll for search results
-      description: |
+      description: |-
         A `PollResponse` containing full or partial search results will be returned, given a valid `PollRequest` including a `requestId`.
 
         Corresponding response status code indicates whether another poll is neccessary until all results are returned.
@@ -267,7 +267,7 @@ paths:
   /shopping/incrementalpolls:
     post:
       summary: Incremental poll for search results (BETA)
-      description: |
+      description: |-
 
         A `IncrementalPollResponse` will be returned, given a `IncrementalPollRequest` including a `requestId`, and zero or more `flightKey` values corresponding to zero or more selected flights from previous `IncrementalPollResponse` if applicable.
 
@@ -308,7 +308,7 @@ paths:
   /booking/checks:
     post:
       summary: Create a booking check of specific trip
-      description: |
+      description: |-
         A `CheckResponse` with an unique `checkId` will be returned, given a `Check` including a list of `segmentGroups` and information of `passengers`.
 
         The list of `segmentGroups` should come from a specific `Trip` included in a `PollResponse`.
@@ -334,7 +334,7 @@ paths:
   /booking/checks/{checkId}:
     get:
       summary: Retrieve a booking check
-      description: |
+      description: |-
         A `CheckResponse` containing a `Check` with the same `checkId` will be returned, given a `checkId` previously returned.
 
         The `CheckStatus` for the `checkId` should be retrieved beforehand.
@@ -360,7 +360,7 @@ paths:
   /booking/checks/{checkId}/status:
     get:
       summary: Retrieve the status of a booking check
-      description: |
+      description: |-
         A `CheckStatusResponse` containing the `CheckStatus` of a booking check will be returned, given a `checkId` previously returned.
 
         If the `segmentGroups` from the check request are available for booking with respect to the information of `passengers`, the a success `checkStatus` of will be returned along with a `totalAmount` in particular `currency`.
@@ -381,7 +381,7 @@ paths:
   /booking/orders:
     post:
       summary: Create a booking order of specific flight
-      description: |
+      description: |-
         An `OrderResponse` containing the booking `Order` with an unique `orderId` will be returned along with `totalAmount` in particular `currency`, given an booking `Order` including the `checkId` previously returned, and information of `Customer` and information of each `Passenger`.
 
         An optional `extended` map of `key:value` pairs can be used to assoicate certain custom data with this particular request for future tracking.
@@ -403,7 +403,7 @@ paths:
 
     get:
       summary: Retrieve one or more booking orders
-      description: |
+      description: |-
         An `OrdersResponse` containing one or more matching booking `Order` records will be returned, given one or more criteria in the query string.
 
         Results will also be paged based on `offset` and `size`.
@@ -428,7 +428,7 @@ paths:
   /booking/orders/{orderId}:
     get:
       summary: Retrieve a booking order
-      description: |
+      description: |-
         A booking `Order` with the `orderId` will be returned, given a specific `orderId`.
       operationId: getOrder
       tags:
@@ -443,7 +443,7 @@ paths:
 
     delete:
       summary: Cancel a booking order that is neither cancelled nor completed
-      description: |
+      description: |-
         The booking order with specified `orderId` will be cancelled, if its status is neither `cancelled` nor `completed`.
 
         > IMPORTANT:
@@ -466,7 +466,7 @@ paths:
   /booking/orders/{orderId}/status:
     get:
       summary: Retrieve the status of a booking order
-      description: |
+      description: |-
         An `OrderStatusResponse` containing the `OrderStatus` of a booking order will be returned, given a specific `orderId`.
       operationId: getOrderStatus
       tags:
@@ -483,7 +483,7 @@ paths:
   /booking/payments:
     post:
       summary: Make a payment to a booking order recently placed
-      description: |
+      description: |-
         A `PaymentResponse` containing the `Payment` with an unique `paymentId` will be made and returned, given a `Payment` with `orderId`, `totalAmount` in specific `currency` along with `creditCard` information.
       operationId: createPayment
       tags:
@@ -506,7 +506,7 @@ paths:
   /booking/payments/{paymentId}:
     get:
       summary: Retrieve information about a payment
-      description: |
+      description: |-
         A `PaymentResponse` containing the `Payment` information will be returned, given a specific `paymentId`.
       operationId: getPayment
       tags:
@@ -542,7 +542,7 @@ components:
 
     OrderStatus:
       name: orderStatus
-      description: |
+      description: |-
         For status definition, see `OrderStatus` under *Order Schemas*.
       in: query
       schema:
@@ -591,7 +591,7 @@ components:
     # Common
     DateTimeStart:
       name: dateTimeStart
-      description: |
+      description: |-
         A start date-time earlier than any booking order returned. It should be in ISO 8601 format (UTC).
       in: query
       schema:
@@ -600,7 +600,7 @@ components:
 
     DateTimeEnd:
       name: dateTimeEnd
-      description: |
+      description: |-
         A end date-time later than any booking order returned. It should be in ISO 8601 format (UTC).
       in: query
       schema:
@@ -627,7 +627,7 @@ components:
   responses:
     # Search
     SearchResponseOK:
-      description: |
+      description: |-
         OK
         > This is a `SearchResponse` containing a `requestId` that can be referred to in `PollRequest`.
       content:
@@ -636,7 +636,7 @@ components:
             $ref: "#/components/schemas/SearchResponse"
 
     SearchResponseBadRequest:
-      description: |
+      description: |-
         Bad Request
         > Check if anything incorrect or missing in the given `SearchRequest`. See `message` for any error message.
       content:
@@ -647,7 +647,7 @@ components:
             message: "Bad Request"
 
     PollResponseOK:
-      description: |
+      description: |-
         OK
         >
         > All have been returned. There is no more result available.
@@ -657,7 +657,7 @@ components:
             $ref: "#/components/schemas/PollResponse"
 
     PollResponsePartial:
-      description: |
+      description: |-
         Partial
         >
         > There are more results available to be polled for the same `PollRequest`.
@@ -667,7 +667,7 @@ components:
             $ref: "#/components/schemas/PollResponse"
 
     PollResponseBadRequest:
-      description: |
+      description: |-
         Partial
         >
         > There are more results available to be polled for the same `PollRequest`.
@@ -679,7 +679,7 @@ components:
             message: "Bad Request"
 
     IncrementalPollResponseOK:
-      description: |
+      description: |-
         OK
         >
         > This is the last `IncrementalPollResponse` for the current `IncrementalPollRequest`. There is no more available.
@@ -691,7 +691,7 @@ components:
             $ref: "#/components/schemas/IncrementalPollResponse"
 
     IncrementalPollResponsePartial:
-      description: |
+      description: |-
         Partial
         >
         > This is a `IncrementalPollResponse` for the same `IncrementalPollRequest`. There are more available.
@@ -701,7 +701,7 @@ components:
             $ref: "#/components/schemas/IncrementalPollResponse"
 
     IncrementalPollResponseBadRequest:
-      description: |
+      description: |-
         Bad Request
         >
         > Check if anything incorrect or missing in the given `IncrementalPollRequest`. See `message` for any error message.
@@ -714,7 +714,7 @@ components:
 
     # Booking
     CheckResponseOK:
-      description: |
+      description: |-
         OK
         > This is a `CheckResponse` containing a `Check` with unique `checkId` that can be referred to when obtaining `CheckStatus` or in creating an `Order`.
       content:
@@ -723,7 +723,7 @@ components:
             $ref: "#/components/schemas/CheckResponse"
 
     CheckResponseBadRequest:
-      description: |
+      description: |-
         Bad Request
         > Check if anything incorrect or missing in the given `Check`. See `message` for any error message.
       content:
@@ -734,7 +734,7 @@ components:
             message: "Bad Request"
 
     CheckResponseNotFound:
-      description: |
+      description: |-
         Not Found
         > No `Check` could be found for the specific `checkId`. See `message` for any error message.
       content:
@@ -745,7 +745,7 @@ components:
             message: "Not Found"
 
     CheckStatusResponseOK:
-      description: |
+      description: |-
         OK
         > This is a `CheckStatusResponse` containing the `CheckStatus` for the given `checkId`.
       content:
@@ -754,7 +754,7 @@ components:
             $ref: "#/components/schemas/CheckStatusResponse"
 
     CheckStatusResponseNotFound:
-      description: |
+      description: |-
         Not Found
         > No `CheckStatus` could be found for the specific `checkId`. See `message` for any error message.
       content:
@@ -765,7 +765,7 @@ components:
             message: "Not Found"
 
     OrderResponseOK:
-      description: |
+      description: |-
         OK
         > This is an `OrderResponse` containing the `Order` with a unique `orderId` that can be referred to when obtaining `OrderStatus`.
       content:
@@ -774,7 +774,7 @@ components:
             $ref: "#/components/schemas/OrderResponse"
 
     OrderResponseBadRequest:
-      description: |
+      description: |-
         Bad Request
         > Check if anything incorrect or missing in the given `Order`. See `message` for any error message.
       content:
@@ -785,7 +785,7 @@ components:
             message: "Bad Request"
 
     OrderResponseNotFound:
-      description: |
+      description: |-
         Not Found
         > No `Order` could be found for the specific `orderId`. See `message` for any error message.
       content:
@@ -796,7 +796,7 @@ components:
             message: "Not Found"
 
     OrdersResponseOK:
-      description: |
+      description: |-
         OK
         > This is an `OrdersResponse` containing an array of zero or more `Order` records.
       content:
@@ -805,7 +805,7 @@ components:
             $ref: "#/components/schemas/OrdersResponse"
 
     OrdersResponseBadRequest:
-      description: |
+      description: |-
         Bad Request
         > Check if anything incorrect or missing in the given criteria. See `message` for any error message.
       content:
@@ -816,7 +816,7 @@ components:
             message: "Bad Request"
 
     OrderStatusResponseOK:
-      description: |
+      description: |-
         OK
         > This is a `OrderStatusResponse` containing the `OrderStatus` for the given `orderId`.
       content:
@@ -825,7 +825,7 @@ components:
             $ref: "#/components/schemas/OrderStatusResponse"
 
     OrderStatusResponseNotFound:
-      description: |
+      description: |-
         Not Found
         > No `OrderStatus` could be found for the specific `orderId`. See `message` for any error message.
       content:
@@ -837,7 +837,7 @@ components:
 
     # Payment
     PaymentResponseOK:
-      description: |
+      description: |-
         OK
         > This is an `PaymentResponse` containing the `Payment` with a unique `paymentId` that can be referred to when obtaining the `Payment`.
       content:
@@ -846,7 +846,7 @@ components:
             $ref: "#/components/schemas/PaymentResponse"
 
     PaymentResponseBadRequest:
-      description: |
+      description: |-
         Bad Request
         > Check if anything incorrect or missing in the given `Payment`. See `message` for any error message.
       content:
@@ -857,7 +857,7 @@ components:
             message: "Bad Request"
 
     PaymentResponseFailed:
-      description: |
+      description: |-
         Payment Required
         > The given `Payment` failed for some reason. See `message` for any error message.
       content:
@@ -868,7 +868,7 @@ components:
             message: "Payment Required"
 
     PaymentResponseConflict:
-      description: |
+      description: |-
         Conflict
         > The `Order` associated with the `orderId` in the given `Payment` might have already been paid.
       content:
@@ -932,7 +932,7 @@ components:
           type: string
           example: 20211128:1740:HEL:CPH:AY959-20211129:1100:CPH:BCN:VY1871-20211129:1850:BCN:CDG:VY8240
         segments:
-          description: |
+          description: |-
             A flight consists of one or more segments.
 
             > For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
@@ -942,7 +942,7 @@ components:
             $ref: "#/components/schemas/Segment"
 
     SegmentGroup:
-      description: |
+      description: |-
         A list of segment groups, where each segment group is a list of segments suggested to be placed within the same booking order.
       properties:
         segmentGroupId:
@@ -981,7 +981,7 @@ components:
         type:
           $ref: "#/components/schemas/TripType"
         segments:
-          description: |
+          description: |-
             A segment group consists of one or more segments. 
 
             > For example, a direct flight from Toronto (YYZ) to London (LON) is a flight consists of exactly one flight segment.
@@ -1041,12 +1041,12 @@ components:
           example: AC
 
     Extended:
-      description: |
+      description: |-
         Extended data from client side to associate. This is useful for storing some information later needs to be retrieved, such as client side order ID. The data is in form of `key:value` pairs. All data will be returned in response.
       type: object
       additionalProperties:
         type: string
-        description: |
+        description: |-
           a custom value associated with this booking order
       example:
         clientsideOrderId: O1234
@@ -1056,7 +1056,7 @@ components:
 
     # Search Request
     SearchRequest:
-      description: |
+      description: |-
         todo
       required:
         - queries
@@ -1097,7 +1097,7 @@ components:
 
     # Poll
     PollRequest:
-      description: |
+      description: |-
         todo
       required:
         - requestId
@@ -1143,7 +1143,7 @@ components:
             $ref: "#/components/schemas/Trip"
 
     IncrementalPollRequest:
-      description: |
+      description: |-
         todo
       required:
         - requestId
@@ -1244,7 +1244,7 @@ components:
           items:
             $ref: "#/components/schemas/Flight"
         segmentGroups:
-          description: |
+          description: |-
             A list of `SegmentGroup` records, where each `SegmentGroup` is a list of `Segment` records suggested to be placed within the same booking order.
 
           type: array
@@ -1268,8 +1268,6 @@ components:
           $ref: "#/components/schemas/Price"
         extended:
           $ref: "#/components/schemas/Extended"
-
-
 
     Price:
       description: This is the pricing information including `price`, `tax` and `totalPrice`.
@@ -1332,18 +1330,18 @@ components:
         currency:
           type: string
           readOnly: true
-          description: |
+          description: |-
             3-letter currency code in ISO 4217 format
           example: EUR
         totalAmount:
           type: number
           readOnly: true
-          description: |
+          description: |-
             Total price amount of all passengers for the flight, including tax and miscellaneous fees.
           example: 456.78
         segmentGroups:
           type: array
-          description: |
+          description: |-
             A list of segment groups, where each segment group is a list of segments suggested to be placed within the same booking order.
           minItems: 1
           items:
@@ -1366,7 +1364,7 @@ components:
     CheckStatus:
       properties:
         status:
-          description: |
+          description: |-
             | status     | description               |
             |------------|---------------------------|
             |`pending`   | booking check in progress |
@@ -1381,7 +1379,7 @@ components:
             - error
         lastUpdated:
           readOnly: true
-          description: |
+          description: |-
             Update date-time when check status was last changed. It should be in ISO 8601 format (UTC).
           type: string
           format: date-time
@@ -1407,19 +1405,19 @@ components:
         createdAt:
           type: string
           readOnly: true
-          description: |
+          description: |-
             Creation date/time of the booking order in ISO 8601 format (UTC)
           format: date-time
         currency:
           type: string
           readOnly: true
-          description: |
+          description: |-
             3-letter currency code in ISO 4217 format
           example: EUR
         totalAmount:
           type: number
           readOnly: true
-          description: |
+          description: |-
             Total price amount of all passengers for the flight, including tax and miscellaneous fees.
           example: 456.78
         checkId:
@@ -1455,7 +1453,7 @@ components:
     OrderStatus:
       properties:
         status:
-          description: |
+          description: |-
             | status    | description                              |
             |-----------|------------------------------------------|
             |`creating` | the booking order is getting created     |
@@ -1481,7 +1479,7 @@ components:
           example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
         lastUpdated:
           readOnly: true
-          description: |
+          description: |-
             Update date-time when booking order status was last changed. It should be in ISO 8601 format (UTC).
           type: string
           format: date-time
@@ -1494,19 +1492,19 @@ components:
           $ref: "#/components/schemas/OrderStatus"
 
     Customer:
-      description: |
+      description: |-
         Customer information, including contact information for booking order related issues
       allOf:
         - $ref: "#/components/schemas/Person"
         - properties:
             phoneCountryCode:
               type: string
-              description: |
+              description: |-
                 Country calling code defined by ITU, starting with international dialing prefix `+`
               example: "+1"
             phoneNumber:
               type: string
-              description: |
+              description: |-
                 Phone number including area code without any punctuation
               example: "1234567890"
             email:
@@ -1519,7 +1517,7 @@ components:
         - properties:
             type:
               type: string
-              description: |
+              description: |-
                 - Adult
                 - Child
                 - Infant
@@ -1530,7 +1528,7 @@ components:
                 - INF
             birthday:
               type: string
-              description: |
+              description: |-
                 Passenger birthday in `YYYY-MM-DD` format
               format: date
               example: "2001-01-01"
@@ -1552,11 +1550,11 @@ components:
           example: Parker
 
     TravelDocument:
-      description: |
+      description: |-
         Passenger travel document
       properties:
         type:
-          description: |
+          description: |-
             Type of travel document
           type: string
           default: PASSPORT
@@ -1566,17 +1564,17 @@ components:
             - PASSPORT
         number:
           type: string
-          description: |
+          description: |-
             Travel document number
           example: EG12345678
         expiryDate:
           type: string
-          description: |
+          description: |-
             Travel document expiry date in `YYYY-MM-DD` format
           format: date
         placeOfIssue:
           type: string
-          description: |
+          description: |-
             Place (e.g. country, province, city) where the travel document was issued
           example: USA
 
@@ -1595,7 +1593,7 @@ components:
           example: 956de7da-ece8-4ba1-acf4-37aeda78cb13
         createdAt:
           readOnly: true
-          description: |
+          description: |-
             Creation date/time of the payment in ISO 8601 format (UTC)
           type: string
           format: date-time
@@ -1656,5 +1654,5 @@ components:
         countryCode:
           type: string
           example: US
-          description: |
+          description: |-
             2-letter ISO country code (alpha-2) as listed at https://en.wikipedia.org/wiki/ISO_3166-1
