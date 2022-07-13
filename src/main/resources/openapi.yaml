@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Virtual Interlining API
-  version: 2.5.0
+  version: 2.5.1
   description: |
     This API specification can be downloaded in [OpenAPI](https://openapis.org) format. Many [code generator tools](https://openapi-generator.tech/docs/generators) are available to generate client code in different programming languages based on the specification file.
 
@@ -16,7 +16,7 @@ info:
     # Introduction
 
     ## What is Virtual Interlining?
-    ​
+
     Interlining is an airline-industry-specific term. Carriers come to an agreement with others, or join an alliance, and then passengers can fly to their destination using all of those airlines in agreement. 
 
     Virtual interlining is where the technology behind the scenes organizes the means for passengers to travel on multiple carriers on a single itinerary even without an agreement. Our virtual interlining technology not only gives your more content in addition to GDS, it also gives contents with more competitive pricing.
@@ -25,8 +25,8 @@ info:
     name: newpathfly
 
 servers:
-  - url: http://uat-api.newpathfly.com/v2
-  - url: http://api.newpathfly.com/v2
+  - url: https://uat-vi-api.newpathfly.com/v2
+  - url: https://vi-api.newpathfly.com/v2
 
 tags:
   - name: Shopping
@@ -1268,8 +1268,6 @@ components:
           $ref: "#/components/schemas/Price"
         extended:
           $ref: "#/components/schemas/Extended"
-
-
 
     Price:
       description: This is the pricing information including `price`, `tax` and `totalPrice`.
